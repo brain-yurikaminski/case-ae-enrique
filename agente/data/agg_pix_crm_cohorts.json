@@ -1,0 +1,47 @@
+[
+  {
+    "crm_pix_cohort":"1. Clicou no Email",
+    "total_usuarios":252,
+    "usuarios_resgataram_pix":39,
+    "taxa_conversao_pct":15.48,
+    "total_pontos_pix":621925.0,
+    "total_reais_pix":11816.6,
+    "ticket_medio_pontos_pix":15946.8
+  },
+  {
+    "crm_pix_cohort":"2. Visualizou (sem clicar)",
+    "total_usuarios":2490,
+    "usuarios_resgataram_pix":443,
+    "taxa_conversao_pct":17.79,
+    "total_pontos_pix":7645303.0,
+    "total_reais_pix":145261.01,
+    "ticket_medio_pontos_pix":17258.0
+  },
+  {
+    "crm_pix_cohort":"3. Recebeu (sem visualizar)",
+    "total_usuarios":6542,
+    "usuarios_resgataram_pix":1174,
+    "taxa_conversao_pct":17.95,
+    "total_pontos_pix":21122782.0,
+    "total_reais_pix":401333.6500000001,
+    "ticket_medio_pontos_pix":17992.1
+  },
+  {
+    "crm_pix_cohort":"4. Falha no envio",
+    "total_usuarios":316,
+    "usuarios_resgataram_pix":49,
+    "taxa_conversao_pct":15.51,
+    "total_pontos_pix":924745.0,
+    "total_reais_pix":17570.17,
+    "ticket_medio_pontos_pix":18872.3
+  },
+  {
+    "crm_pix_cohort":"5. Nao impactado pela campanha",
+    "total_usuarios":2400,
+    "usuarios_resgataram_pix":435,
+    "taxa_conversao_pct":18.13,
+    "total_pontos_pix":7664679.0,
+    "total_reais_pix":145629.3,
+    "ticket_medio_pontos_pix":17620.0
+  }
+]

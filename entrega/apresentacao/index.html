@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pontua+ · Apresentação Executiva para a Diretoria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+  document.addEventListener('error', function(e){
+    var t = e.target;
+    if(t && t.tagName === 'IMG' && t.dataset.local && !t.dataset.fellBack){
+      t.dataset.fellBack = '1'; t.src = t.dataset.local;
+    }
+  }, true);
+</script>
+<style>
+  :root{
+    --primary:#1E2BFF; --secondary:#2438E6; --accent-data:#00CFFF; --accent-synapse:#3DFF6E;
+    --n900:#060A1C; --n800:#0E142F; --n700:#161D40;
+    --surface-card:#FFFFFF; --surface-float:#E4E9F7; --ink:#0C1230; --on-light-low:#5A6384;
+    --hi:#EAF0FF; --mid:#A9B4D0; --low:#6B7699;
+    --success:#3DFF6E; --error:#FF6E86; --warning:#FFB300;
+    --stroke:rgba(255,255,255,0.12);
+    --mx:115px; --my:65px;
+    --mono:'Roboto Mono', monospace; --sans:'Inter', sans-serif;
+    --body-font:var(--mono);
+  }
+  body[data-voice="produto"]{ --body-font:var(--sans); }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ height:100%; background:#000; overflow:hidden; }
+  body{ font-family:var(--mono); color:var(--hi); -webkit-font-smoothing:antialiased; }
+  img,video{ display:block; max-width:100%; }
+
+  .viewport{ position:fixed; inset:0; overflow:hidden; }
+  .deck{ position:absolute; left:50%; top:50%; width:1920px; height:1080px;
+    transform:translate(-50%,-50%); transform-origin:center center; }
+  .slide{
+    position:absolute; inset:0; overflow:hidden; background:var(--n900);
+    opacity:0; visibility:hidden; transition:opacity .5s ease, visibility 0s linear .5s;
+  }
+  .slide.current{ opacity:1; visibility:visible; transition:opacity .5s ease; }
+  .pad{ position:absolute; inset:var(--my) var(--mx); }
+
+  .wordmark{ position:absolute; top:var(--my); left:var(--mx); height:36px; width:auto; z-index:3; }
+  .vtag{
+    position:absolute; right:38px; top:50%; transform:translate(50%,-50%) rotate(90deg);
+    font-size:16px; letter-spacing:.18em; text-transform:uppercase; color:var(--low); white-space:nowrap; z-index:3;
+  }
+  .foot{
+    position:absolute; left:var(--mx); right:var(--mx); bottom:28px; display:flex; justify-content:space-between;
+    font-size:16px; color:var(--low); letter-spacing:.04em; z-index:3;
+  }
+  .progress{ position:fixed; left:0; right:0; bottom:0; display:flex; gap:3px; height:3px; z-index:20; }
+  .progress i{ flex:1; background:rgba(255,255,255,.14); transition:background-color .2s; }
+  .progress i.on{ background:var(--accent-data); }
+  .hint{ position:fixed; right:14px; bottom:10px; font:12px var(--mono); color:#6B7699; z-index:21; transition:opacity .6s; }
+  .hint.gone, .static .hint{ opacity:0; }
+  .static .slide, .static .slide.current{ transition:none; }
+
+  .overline{ font-size:20px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent-data); }
+  .t-cover{ font-size:110px; font-weight:700; line-height:1.08; letter-spacing:-.03em; }
+  .t-divider{ font-size:96px; font-weight:700; line-height:1.05; letter-spacing:-.03em; }
+  .t-kicker{ font-size:36px; font-weight:700; }
+  .t-title{ font-size:56px; font-weight:700; line-height:1.18; letter-spacing:-.01em; text-wrap:balance; }
+  .t-sub{ font-size:32px; font-weight:500; line-height:1.25; }
+  .t-body{ font-family:var(--body-font); font-size:24px; line-height:1.55; color:var(--mid); }
+  .t-body-sm{ font-family:var(--body-font); font-size:20px; line-height:1.55; color:var(--mid); }
+  .t-label{ font-size:20px; }
+  .t-caption{ font-size:16px; color:var(--low); }
+  .t-data-xl{ font-size:180px; font-weight:700; line-height:.9; letter-spacing:-.04em; }
+  .t-data-lg{ font-size:64px; font-weight:700; line-height:1; letter-spacing:-.02em; }
+  .unit{ font-size:.4em; letter-spacing:0; }
+  .head{ display:flex; flex-direction:column; gap:20px; max-width:1400px; }
+
+  .hl{ position:relative; color:#fff; padding:0 .12em; z-index:0; white-space:nowrap; }
+  .hl::before{ content:""; position:absolute; inset:.08em 0 -.04em; background:var(--primary); z-index:-1;
+    transform-origin:left center; transform:scaleX(var(--hl,1)); }
+  .hl-red{ position:relative; color:#fff; padding:0 .12em; z-index:0; white-space:nowrap; }
+  .hl-red::before{ content:""; position:absolute; inset:.08em 0 -.04em; background:var(--error); z-index:-1;
+    transform-origin:left center; transform:scaleX(var(--hl,1)); }
+  .hl-invert{ display:inline-flex; align-items:baseline; background:#fff; color:var(--secondary); padding:0 .14em .04em; line-height:1; }
+  .caret{ color:var(--secondary); font-weight:400; animation:blink 1s steps(1) infinite; }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  .card{ background:var(--n800); border:1px solid var(--stroke); padding:36px;
+    transition:transform .3s ease, border-color .3s ease; }
+  .card:hover{ transform:translateY(-4px); border-color:var(--primary); }
+  .card h3{ font-size:28px; font-weight:700; color:var(--hi); margin:18px 0 14px; line-height:1.2; }
+  .picto{ width:52px; height:52px; filter:brightness(0) invert(1); }
+  .grid-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+  .grid-2{ display:grid; grid-template-columns:repeat(2,1fr); gap:32px; }
+  .grid-4{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+  .joined{ display:grid; gap:1px; background:var(--stroke); border:1px solid var(--stroke); }
+  .highlight{ background:var(--primary); border-color:var(--primary); color:#fff; }
+  .highlight .overline{ color:#fff; font-weight:700; }
+  .highlight .t-body, .highlight .t-body-sm{ color:#fff; }
+
+  .kpis{ grid-template-columns:repeat(3,1fr); background:rgba(255,255,255,.14); border:0; }
+  .kpi{ background:var(--secondary); padding:36px; color:#fff; }
+  .kpi .overline{ color:rgba(255,255,255,.75); }
+  .kpi .t-body-sm{ color:rgba(255,255,255,.85); margin-top:10px; }
+  .chart{ position:relative; display:flex; align-items:flex-end; gap:0; border-bottom:1px solid var(--n700); }
+  .bar-slot{ flex:1; height:100%; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; position:relative; }
+  .bar{ width:60%; background:var(--primary); position:relative; }
+  .bar.focus{ background:var(--accent-data); }
+  .bar.danger{ background:var(--error); }
+  .bar.success{ background:var(--accent-synapse); }
+  .bar b{ position:absolute; bottom:100%; left:0; right:0; text-align:center; font-size:18px; padding-bottom:6px; color:var(--hi); font-weight:500; }
+  .cat{ position:absolute; top:100%; font-size:16px; color:var(--low); padding-top:10px; text-align:center; width:100%; }
+  .gridline{ position:absolute; left:0; right:0; height:1px; background:var(--n700); }
+
+  .cmp{ grid-template-columns:1.5fr repeat(3,1fr); }
+  .cmp > div{ background:var(--n900); padding:20px 24px; font-size:20px; display:flex; align-items:center; }
+  .cmp .hd{ background:var(--n800); font-weight:700; font-size:22px; }
+  .cmp .hd.brain{ background:var(--primary); color:#fff; }
+  .cmp .brain{ background:rgba(30,43,255,.16); justify-content:center; }
+  .cmp .c{ justify-content:center; }
+
+  .tag-danger{ display:inline-block; background:var(--error); color:#fff; font-size:14px; padding:4px 8px; font-weight:700; }
+  .tag-success{ display:inline-block; background:var(--accent-synapse); color:#000; font-size:14px; padding:4px 8px; font-weight:700; }
+  .tag-warn{ display:inline-block; background:var(--warning); color:#000; font-size:14px; padding:4px 8px; font-weight:700; }
+
+  .fullbleed{ position:absolute; inset:0; }
+  .fullbleed img{ width:100%; height:100%; object-fit:cover; }
+  .scrim-bottom{ position:absolute; inset:0; background:linear-gradient(0deg, rgba(6,10,28,.88) 0%, rgba(6,10,28,0) 40%); }
+
+  @media (prefers-reduced-motion:reduce){
+    .slide, .slide.current{ transition:none; }
+  }
+</style>
+</head>
+<body data-voice="comercial">
+<div class="viewport">
+<div class="deck" id="deck">
+
+<!-- SLIDE 01 · CAPA MANIFESTO =================================== -->
+<section class="slide" data-section="Capa" data-template="capa-manifesto" data-tagline>
+  <img class="wordmark" src="img/logo-branco.png" alt="Brain003">
+  <div class="pad" style="display:flex; flex-direction:column; justify-content:center; gap:40px;">
+    <span class="overline" data-anim="up">Banco Aurora · Programa Pontua+ · Devolutiva Executiva</span>
+    <h1 class="t-cover" data-anim="up">O Impacto do Pix na<br>Operação de Pontos</h1>
+    <p class="t-body" style="max-width:1250px" data-anim="up">
+      Diagnóstico completo dos resgates pós-27/05/2026, auditoria das 3 afirmações da diretoria e recomendação estratégica fundamentada em dados.
+    </p>
+  </div>
+  <div class="foot" style="bottom:var(--my); color:var(--hi)" data-anim="up">
+    <span class="t-label">Apresentação para a Diretoria</span><span class="t-label">Outubro / 2026</span>
+  </div>
+</section>
+
+<!-- SLIDE 02 · SUMÁRIO EXECUTIVO EM 3 PONTOS ==================== -->
+<section class="slide" data-section="Sumário" data-template="sumario-executivo" data-tagline>
+  <img class="wordmark" src="img/logo-branco.png" alt="Brain003">
+  <div class="pad" style="display:flex; flex-direction:column; justify-content:center; gap:64px;">
+    <div class="head" style="max-width:1500px">
+      <span class="overline" data-anim="up">Diagnóstico Executivo</span>
+      <h2 class="t-title" data-anim="up">O Pix disparou o engajamento, mas <span class="hl-red" data-anim="hl">rompeu o contrato de Varejo</span> e drenou a margem.</h2>
+    </div>
+    <div class="grid-3">
+      <div class="card" data-anim="up">
+        <img class="picto" src="img/picto-linear.png" alt="">
+        <h3>Volume Dobrou (+103%)</h3>
+        <p class="t-body-sm">O resgate mensal saltou de 15,5M para mais de 31M de pontos. O cliente reagiu instantaneamente ao dinheiro na conta.</p>
+      </div>
+      <div class="card" data-anim="up" style="border-color:var(--error)">
+        <img class="picto" src="img/picto-x.png" alt="">
+        <h3>Varejo Caiu para 13%</h3>
+        <p class="t-body-sm">O contrato exige Varejo &ge; 20%. O volume absoluto em varejo se manteve estável, mas foi diluído pelo Pix, quebrando o SLA.</p>
+      </div>
+      <div class="card" data-anim="up" style="border-color:var(--warning)">
+        <img class="picto" src="img/picto-3elements.png" alt="">
+        <h3>Resgate Mais Caro (0,019)</h3>
+        <p class="t-body-sm">O Pix custa R$ 0,0190/ponto (+26,7% vs Aéreas e +52% vs Varejo parceiro). Cada ponto em Pix aumenta o prejuízo operacional.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 03 · O PLACAR DOS RESGATES ============================ -->
+<section class="slide" data-section="Diagnóstico" data-template="dashboard" data-tagline>
+  <img class="wordmark" src="img/logo-branco.png" alt="Brain003">
+  <div class="pad" style="display:grid; grid-template-rows:auto auto 1fr; gap:44px; padding-top:90px;">
+    <div class="head">
+      <span class="overline" data-anim="up">Volume & Shares de Resgate</span>
+      <h2 class="t-title" data-anim="up">A anatomia da explosão pós-27/05/2026</h2>
+    </div>
+    <div class="joined kpis">
+      <div class="kpi" data-anim="up">
+        <span class="overline">Volume Médio Pós-Pix</span>
+        <div class="t-data-lg" style="margin-top:10px">31,5<span class="unit"> M pts/mês</span></div>
+        <p class="t-body-sm">vs 15,5 M pts/mês no pré-Pix (+103%)</p>
+      </div>
+      <div class="kpi" data-anim="up" style="background:#5B0B1E">
+        <span class="overline">Share Varejo Atual</span>
+        <div class="t-data-lg" style="margin-top:10px; color:var(--error)">13,0%</div>
+        <p class="t-body-sm">Meta Contratual: &ge; 20,0% <span class="tag-danger">VIOLADA</span></p>
+      </div>
+      <div class="kpi" data-anim="up">
+        <span class="overline">Share Aéreas Atual</span>
+        <div class="t-data-lg" style="margin-top:10px; color:var(--warning)">59,0%</div>
+        <p class="t-body-sm">Meta Contratual: &ge; 50,0% (Margem apertada)</p>
+      </div>
+    </div>
+    <div style="display:grid; grid-template-columns:1.8fr 1fr; gap:60px; align-items:end; padding-bottom:40px;">
+      <div class="chart" style="height:230px">
+        <div class="gridline" style="bottom:50%"></div>
+        <div class="bar-slot"><div class="bar" data-anim="bars" style="height:48%"><b>15,9M</b></div><span class="cat">Fev/26</span></div>
+        <div class="bar-slot"><div class="bar" data-anim="bars" style="height:58%"><b>19,1M</b></div><span class="cat">Mar/26</span></div>
+        <div class="bar-slot"><div class="bar" data-anim="bars" style="height:57%"><b>18,8M</b></div><span class="cat">Abr/26</span></div>
+        <div class="bar-slot"><div class="bar" data-anim="bars" style="height:65%"><b>21,5M</b></div><span class="cat">Mai/26</span></div>
+        <div class="bar-slot"><div class="bar focus" data-anim="bars" style="height:92%"><b>30,4M</b></div><span class="cat">Jun/26</span></div>
+        <div class="bar-slot"><div class="bar focus" data-anim="bars" style="height:93%"><b>30,5M</b></div><span class="cat">Jul/26</span></div>
+        <div class="bar-slot"><div class="bar focus" data-anim="bars" style="height:96%"><b>31,4M</b></div><span class="cat">Ago/26</span></div>
+        <div class="bar-slot"><div class="bar danger" data-anim="bars" style="height:100%"><b>33,5M</b></div><span class="cat">Set/26</span></div>
+      </div>
+      <div data-anim="up">
+        <p class="t-body-sm">
+          A partir de junho, o Pix se estabilizou em cerca de <strong style="color:var(--error)">9,4 milhões de pontos por mês</strong> (~29% do total). 
+          O programa passou a queimar caixa em ritmo acelerado para pagar resgate em dinheiro.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 04 · O EFEITO DILUIÇÃO ================================ -->
+<section class="slide" data-section="Diagnóstico" data-template="efeito-diluicao" data-tagline>
+  <img class="wordmark" src="img/logo-branco.png" alt="Brain003">
+  <div class="pad" style="display:flex; flex-direction:column; justify-content:center; gap:54px;">
+    <div class="head">
+      <span class="overline" data-anim="up">Análise Contratual</span>
+      <h2 class="t-title" data-anim="up">O Varejo não caiu em volume. <span class="hl" data-anim="hl">O denominador explodiu.</span></h2>
+    </div>
+    <div class="grid-2">
+      <div class="card" data-anim="up">
+        <h3 style="color:var(--accent-synapse)">Volume Absoluto em Varejo (Estável)</h3>
+        <p class="t-body-sm" style="margin-bottom:20px">Os resgates em produtos e transferências de varejo continuaram firmes:</p>
+        <div style="font-family:var(--mono); font-size:22px; line-height:2.0; color:var(--hi)">
+          • Jan/26: <strong>2,88 M pts</strong><br>
+          • Abr/26: <strong>3,63 M pts</strong><br>
+          • Mai/26: <strong>4,37 M pts</strong> (mês do lançamento)<br>
+          • Jun/26: <strong>4,04 M pts</strong> (share caiu para 13,3%)<br>
+          • Set/26: <strong>4,34 M pts</strong> (share caiu para 13,0%)
+        </div>
+      </div>
+      <div class="card" data-anim="up" style="background:#0F1838">
+        <h3 style="color:var(--accent-data)">A Distorção Matemática da Métrica</h3>
+        <p class="t-body-sm" style="margin-bottom:20px">A meta foi desenhada para uma economia de pontos sem resgate monetário:</p>
+        <p class="t-body-sm" style="line-height:1.7">
+          Como o contrato define a meta como <em>percentual sobre o total resgatado</em>, a introdução de 9,4M de pontos em Pix aumentou a base em +55%.
+          <br><br>
+          <strong>Conclusão Técnica:</strong> A operadora não falhou na entrega comercial de Varejo; a métrica contratual é que se tornou inadequada com a criação do Pix.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 05 · DIVISOR CAPÍTULO 1 =============================== -->
+<section class="slide" data-section="Capítulo 1" data-template="capitulo" style="background:var(--primary)">
+  <div class="pad" style="display:flex; flex-direction:column; justify-content:center; gap:20px;" data-anim="cinematic">
+    <span class="t-kicker">Capítulo 1:</span>
+    <h2 class="t-divider">Auditoria das 3 Afirmações<br>da Diretoria</h2>
+  </div>
+  <div class="vtag" style="color:rgba(255,255,255,.6)">Evidências e Verificabilidade Contábil</div>
+</section>
+
+<!-- SLIDE 06 · AFIRMAÇÃO 1: CRM ================================= -->
+<section class="slide" data-section="Auditoria 1" data-template="afirmacao-crm" data-tagline>
+  <img class="wordmark" src="img/logo-branco.png" alt="Brain003">
+  <div class="pad" style="display:flex; flex-direction:column; justify-content:center; gap:44px;">
+    <div class="head">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span class="overline" data-anim="up">Afirmação 01 · Time de CRM</span>
+        <span class="tag-danger" data-anim="up">VEREDITO: FALSA</span>
+      </div>
+      <h2 class="t-title" data-anim="up">"A comunicação de lançamento explica o sucesso do Pix."</h2>
+    </div>
+    <div class="grid-2">
+      <div class="card" data-anim="up">
+        <h3>Evidências Empíricas nos Dados</h3>
+        <div style="font-family:var(--mono); font-size:20px; line-height:1.8; color:var(--mid); margin-top:16px;">
+          • O Pix foi lançado em <strong>27/05/2026</strong>. A campanha de e-mail só foi disparada em <strong>28/05 às 13:00</strong>. Clientes já estavam resgatando antes.<br><br>
+          • Dos 2.140 clientes únicos que fizeram Pix, <strong>apenas 39 clientes (1,8%)</strong> clicaram no e-mail de lançamento.<br><br>
+          • <strong>435 clientes (20,3%)</strong> que resgataram Pix sequer foram cadastrados ou impactados pela campanha.
+        </div>
+      </div>
+      <div class="card" data-anim="up" style="background:#0F1838">
+        <h3>Taxa de Conversão por Coorte de CRM</h3>
+        <div style="font-family:var(--mono); font-size:20px; line-height:2.0; color:var(--hi); margin-top:16px;">
+          1. Clicou no Email: <strong style="color:var(--accent-data)">15,48%</strong> (39 / 252)<br>
+          2. Visualizou Email: <strong style="color:var(--accent-data)">17,79%</strong> (443 / 2.490)<br>
+          3. Recebeu (sem abrir): <strong style="color:var(--accent-data)">17,95%</strong> (1.174 / 6.542)<br>
+          4. Falha no envio: <strong style="color:var(--accent-data)">15,51%</strong> (49 / 316)<br>
+          5. <strong>Não Impactado:</strong> <strong style="color:var(--accent-synapse)">18,13%</strong> (435 / 2.400)
+        </div>
+        <p class="t-caption" style="margin-top:18px; color:var(--mid)">
+          A conversão de quem não recebeu a campanha (18,13%) é <em>maior</em> do que a de quem clicou (15,48%). O sucesso foi 100% orgânico.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 07 · AFIRMAÇÃO 2: OPERADOR ============================ -->
+<section class="slide" data-section="Auditoria 2" data-template="afirmacao-operador" data-tagline>
+  <img class="wordmark" src="img/logo-branco.png" alt="Brain003">
+  <div class="pad" style="display:flex; flex-direction:column; justify-content:center; gap:44px;">
+    <div class="head">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span class="overline" data-anim="up">Afirmação 02 · Relatório do Operador</span>
+        <span class="tag-danger" data-anim="up">VEREDITO: ERRO DE CÁLCULO GROSSEIRO</span>
+      </div>
+      <h2 class="t-title" data-anim="up">"Na verdade o Pix sai a cerca de R$ 0,016 por ponto."</h2>
+    </div>
+    <div class="grid-2">
+      <div class="card" data-anim="up">
+        <h3>A Realidade Factual dos Pedidos</h3>
+        <p class="t-body-sm" style="line-height:1.7; margin-top:14px;">
+          Em todos os <strong>2.808 itens de Pix aprovados</strong> no sistema, a conversão é rigorosamente exata:
+        </p>
+        <div class="t-data-lg" style="margin:20px 0; color:var(--accent-synapse)">R$ 0,019000<span class="unit"> / ponto</span></div>
+        <p class="t-body-sm" style="line-height:1.7">
+          O total pago em reais foi <strong>R$ 721.610,73</strong> para <strong>37.979.434 pontos</strong> resgatados. Não houve desconto nem repasse a R$ 0,016.
+        </p>
+      </div>
+      <div class="card" data-anim="up" style="background:#0F1838">
+        <h3>Como o Operador Cometeu o Erro</h3>
+        <p class="t-body-sm" style="line-height:1.7; margin-top:14px;">
+          No <code>relatorio_mensal_cliente.csv</code>, o operador somou os pontos de <strong>todos os status</strong> (inclusive cancelados e estornados):
+        </p>
+        <div style="font-family:var(--mono); font-size:18px; line-height:1.8; color:var(--mid); margin-top:16px;">
+          • Pontos Aprovados: <strong>9.215.135</strong><br>
+          • Pontos Cancelados/Estornados: <strong>1.494.284</strong><br>
+          • Total no Relatório: <strong>10.709.419 pts</strong> (bruto)<br>
+          • Reais no Relatório: <strong>R$ 174.261,75</strong> (líquido aprovado)<br>
+          • Cálculo errôneo: R$ 174.261 &divide; 10.709.419 = <strong style="color:var(--error)">R$ 0,01627</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 08 · AFIRMAÇÃO 3: BREAKAGE ============================ -->
+<section class="slide" data-section="Auditoria 3" data-template="afirmacao-breakage" data-tagline>
+  <img class="wordmark" src="img/logo-branco.png" alt="Brain003">
+  <div class="pad" style="display:flex; flex-direction:column; justify-content:center; gap:44px;">
+    <div class="head">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span class="overline" data-anim="up">Afirmação 03 · Diretor</span>
+        <span class="tag-danger" data-anim="up">VEREDITO: CONFUSÃO CONCEITUAL</span>
+      </div>
+      <h2 class="t-title" data-anim="up">"Nosso breakage está em 40%! Nossa meta é não passar de 20%!"</h2>
+    </div>
+    <div class="grid-2">
+      <div class="card" data-anim="up">
+        <h3>O que o Diretor Olhou</h3>
+        <p class="t-body-sm" style="line-height:1.7; margin-top:14px;">
+          O diretor olhou para a <strong>Taxa de Resgate (Redemption Rate)</strong> e chamou equivocadamente de Breakage:
+        </p>
+        <div class="t-data-lg" style="margin:20px 0; color:var(--error)">42,45%</div>
+        <p class="t-body-sm" style="line-height:1.7">
+          Total Resgatado (323,4M) &divide; Total de Créditos Emitidos (761,8M) = 42,45%. Isso mede engajamento de resgate, não expiração.
+        </p>
+      </div>
+      <div class="card" data-anim="up" style="background:#0F1838">
+        <h3>O Breakage Real nos Dados</h3>
+        <p class="t-body-sm" style="line-height:1.7; margin-top:14px;">
+          Breakage é a taxa de pontos emitidos que <strong>expiram sem uso</strong>:
+        </p>
+        <div style="font-family:var(--mono); font-size:20px; line-height:2.0; color:var(--hi); margin-top:16px;">
+          • Base Migrada Expirada: <strong>64.090.805 pts</strong><br>
+          • Total Migrado: <strong>324.024.198 pts</strong><br>
+          • <strong>Breakage Real da Migração:</strong> <strong style="color:var(--accent-synapse)">19,78%</strong> (&le; 20% Meta)<br>
+          • Safra Nova (Aurora): Validade de 24 meses (expira apenas a partir de Set/2027). Breakage atual = <strong style="color:var(--accent-data)">0,0%</strong>.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 09 · DIVISOR CAPÍTULO 2 =============================== -->
+<section class="slide" data-section="Capítulo 2" data-template="capitulo" style="background:var(--primary)">
+  <div class="pad" style="display:flex; flex-direction:column; justify-content:center; gap:20px;" data-anim="cinematic">
+    <span class="t-kicker">Capítulo 2:</span>
+    <h2 class="t-divider">Unit Economics &<br>Sustentabilidade Financeira</h2>
+  </div>
+  <div class="vtag" style="color:rgba(255,255,255,.6)">Margem por Ponto Resgatado</div>
+</section>
+
+<!-- SLIDE 10 · COMPARATIVO UNIT ECONOMICS ======================= -->
+<section class="slide" data-section="Economics" data-template="comparativo-custos" data-tagline>
+  <img class="wordmark" src="img/logo-branco.png" alt="Brain003">
+  <div class="pad" style="display:flex; flex-direction:column; justify-content:center; gap:44px;">
+    <div class="head">
+      <span class="overline" data-anim="up">Custo Efetivo por Categoria</span>
+      <h2 class="t-title" data-anim="up">O Pix é a modalidade mais deficitária da história do programa.</h2>
+    </div>
+    <div class="joined cmp" data-anim="up">
+      <div class="hd">Modalidade de Resgate</div>
+      <div class="hd c">Custo / Ponto</div>
+      <div class="hd c">vs Aéreas</div>
+      <div class="hd c">Vantagem ao Programa</div>
+
+      <div><strong>Varejo Transferências</strong> (Nuvem, Pontos Max)</div>
+      <div class="c mono" style="color:var(--accent-synapse)">R$ 0,01250</div>
+      <div class="c mono">- 16,7%</div>
+      <div class="c"><span class="tag-success">MUITO VANTAJOSO</span></div>
+
+      <div><strong>Varejo Produtos</strong> (Casa&Cia, Mega, Tech10)</div>
+      <div class="c mono" style="color:var(--accent-synapse)">R$ 0,01390</div>
+      <div class="c mono">- 7,3%</div>
+      <div class="c"><span class="tag-success">PARCEIROS PRÓPRIOS</span></div>
+
+      <div><strong>Passagens Aéreas</strong> (Custo Líquido com Copay)</div>
+      <div class="c mono" style="color:var(--warning)">R$ 0,01500</div>
+      <div class="c mono">Referência</div>
+      <div class="c"><span class="tag-warn">DESVANTAJOSO</span></div>
+
+      <div style="background:#2A0D15"><strong>Pontos no Pix</strong> (Cashback Direto em Conta)</div>
+      <div class="c mono" style="background:#2A0D15; color:var(--error); font-weight:700">R$ 0,01900</div>
+      <div class="c mono" style="background:#2A0D15; color:var(--error)">+ 26,7%</div>
+      <div class="c" style="background:#2A0D15"><span class="tag-danger">DRENAGEM SEVERA</span></div>
+    </div>
+    <div class="card" style="padding:24px 32px; background:rgba(255,110,134,0.08); border-color:var(--error)" data-anim="up">
+      <p class="t-body-sm" style="color:var(--hi)">
+        Se o Banco Aurora paga menos de R$ 0,0150 por ponto gerado no cartão, o Pix perde <strong>R$ 0,0040 a R$ 0,0065 por ponto</strong>. 
+        Em 4 meses, foram queimados <strong>R$ 721.610</strong> em caixa, gerando um prejuízo adicional estimado de <strong>mais de R$ 150 mil</strong> comparado a Aéreas e <strong>R$ 240 mil</strong> comparado a Varejo.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 11 · DIVISOR CAPÍTULO 3 =============================== -->
+<section class="slide" data-section="Capítulo 3" data-template="capitulo" style="background:var(--primary)">
+  <div class="pad" style="display:flex; flex-direction:column; justify-content:center; gap:20px;" data-anim="cinematic">
+    <span class="t-kicker">Capítulo 3:</span>
+    <h2 class="t-divider">Recomendação Estratégica<br>para a Diretoria</h2>
+  </div>
+  <div class="vtag" style="color:rgba(255,255,255,.6)">Decisão Executiva & Próximos Passos</div>
+</section>
+
+<!-- SLIDE 12 · RECOMENDAÇÃO EM UMA PÁGINA ======================= -->
+<section class="slide" data-section="Recomendação" data-template="recomendacao-1-pagina" data-tagline>
+  <img class="wordmark" src="img/logo-branco.png" alt="Brain003">
+  <div class="pad" style="display:flex; flex-direction:column; justify-content:center; gap:40px;">
+    <div class="head">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span class="overline" data-anim="up">Plano de Ação para a Semana que Vem</span>
+        <span class="tag-warn" style="font-size:16px; padding:6px 14px;" data-anim="up">DECISÃO: REESTRUTURAR / COIBIR O PIX</span>
+      </div>
+      <h2 class="t-title" data-anim="up">Quatro alavancas para estancar a perda e recuperar as metas:</h2>
+    </div>
+    <div class="grid-4" data-anim="up">
+      
+      <div class="card" style="border-top:4px solid var(--accent-data)">
+        <span class="t-label" style="color:var(--accent-data)">01 // REPRECIFICAÇÃO</span>
+        <h3 style="font-size:22px">Ajustar para R$ 0,0125/pt</h3>
+        <p class="t-body-sm" style="font-size:17px; line-height:1.6">
+          Trocar a paridade de 53 pts/R$ 1 (R$ 0,019) para <strong>80 pts/R$ 1 (R$ 0,0125)</strong>, igualando ao custo de parceiros.
+          <br><br>
+          <strong>Impacto:</strong> Economia direta de <strong>~R$ 60 mil/mês (~R$ 720 mil/ano)</strong>.
+        </p>
+      </div>
+
+      <div class="card" style="border-top:4px solid var(--accent-synapse)">
+        <span class="t-label" style="color:var(--accent-synapse)">02 // RENEGOCIAÇÃO SLA</span>
+        <h3 style="font-size:22px">Meta de Varejo em Volume</h3>
+        <p class="t-body-sm" style="font-size:17px; line-height:1.6">
+          Renegociar com o banco para que a meta de Varejo seja um <strong>volume absoluto (&ge; 4,0M pts/mês)</strong> ou expurgar o Pix do denominador.
+          <br><br>
+          <strong>Impacto:</strong> Elimina a inadimplência contratual imediatamente.
+        </p>
+      </div>
+
+      <div class="card" style="border-top:4px solid var(--warning)">
+        <span class="t-label" style="color:var(--warning)">03 // RESTRIÇÃO POR TIER</span>
+        <h3 style="font-size:22px">Limitar Essencial & Gold</h3>
+        <p class="t-body-sm" style="font-size:17px; line-height:1.6">
+          Essencial e Gold têm 35-37% de resgate em Pix. Estabelecer lote mínimo ou travar Pix para cartões de entrada, empurrando o cliente para o Varejo.
+          <br><br>
+          <strong>Impacto:</strong> Recupera o share de Varejo orgânico.
+        </p>
+      </div>
+
+      <div class="card" style="border-top:4px solid var(--error)">
+        <span class="t-label" style="color:var(--error)">04 // ZERO MARKETING</span>
+        <h3 style="font-size:22px">Cessar Comunicação</h3>
+        <p class="t-body-sm" style="font-size:17px; line-height:1.6">
+          Comprovamos que o CRM não gerou conversão incremental. Desligar qualquer estímulo, push ou banner de Pix nas plataformas.
+          <br><br>
+          <strong>Impacto:</strong> Reduz atrito e realoca verba de mídia em campanhas de Varejo.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 13 · O QUE AINDA FALTA SABER =========================== -->
+<section class="slide" data-section="Lacunas" data-template="perguntas-abertas" data-tagline>
+  <img class="wordmark" src="img/logo-branco.png" alt="Brain003">
+  <div class="pad" style="display:flex; flex-direction:column; justify-content:center; gap:44px;">
+    <div class="head">
+      <span class="overline" data-anim="up">Governança & Diligência</span>
+      <h2 class="t-title" data-anim="up">O que ainda falta saber para a decisão final</h2>
+    </div>
+    <div class="grid-2">
+      <div class="card" data-anim="up">
+        <h3 style="color:var(--accent-data)">Perguntas para o Banco Aurora (Negócio)</h3>
+        <div style="font-family:var(--mono); font-size:19px; line-height:1.8; color:var(--mid); margin-top:16px;">
+          1. <strong>Receita por Ponto:</strong> Qual é o valor contratual exato que o banco repassa à operadora por ponto emitido no cartão?<br><br>
+          2. <strong>Penalidades Contratuais:</strong> Há multa financeira ou perda de exclusividade prevista em contrato pela violação do share de 20% em Varejo?<br><br>
+          3. <strong>Retenção de Clientes:</strong> O lançamento do Pix reduziu o churn de cartões ou aumentou o spend (faturamento) do cartão no banco?
+        </div>
+      </div>
+      <div class="card" data-anim="up" style="background:#0F1838">
+        <h3 style="color:var(--accent-synapse)">Perguntas para a Engenharia de Sistemas</h3>
+        <div style="font-family:var(--mono); font-size:19px; line-height:1.8; color:var(--mid); margin-top:16px;">
+          1. <strong>Tabela Orders:</strong> Por que a coluna <code>user_id</code> em <code>orders.csv</code> está 100% nula? Existe plano para deprecá-la ou corrigi-la na origem?<br><br>
+          2. <strong>Relatório do Operador:</strong> Por que o script de fechamento do relatório mensal do cliente não filtrava cancelamentos e estornos?<br><br>
+          3. <strong>Regras de Expiração:</strong> Qual é a política de expiração para os pontos da safra nova quando atingirem set/2027?
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 14 · ENCERRAMENTO ===================================== -->
+<section class="slide" data-section="Fim" data-template="encerramento">
+  <div class="fullbleed"><img src="img/cover.jpg" alt="Brain003"></div>
+  <div class="scrim-bottom"></div>
+  <div class="pad" style="display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; gap:36px; z-index:2">
+    <img src="img/logo-branco.png" alt="Brain003" style="height:56px; margin-bottom:12px;">
+    <h2 class="t-cover" style="font-size:80px;">Prontos para a decisão.</h2>
+    <p class="t-sub" style="color:var(--mid); max-width:1000px;">
+      Painel interativo e agentes analíticos disponíveis para simulações ao vivo.
+    </p>
+  </div>
+  <div class="foot" style="bottom:var(--my); color:var(--hi)">
+    <span class="t-label">Case Analytics Engineer · Brain003</span><span class="t-label">Banco Aurora / Pontua+</span>
+  </div>
+</section>
+
+</div><!-- /deck -->
+</div><!-- /viewport -->
+
+<div class="progress" id="progress"></div>
+<div class="hint">Use as setas &larr; &rarr; ou espaço para navegar · F tela cheia</div>
+
+<script src="lib/gsap.min.js"></script>
+<script src="lib/anime.min.js"></script>
+<script>
+(function(){
+  var deck = document.getElementById('deck');
+  var slides = Array.from(deck.querySelectorAll('.slide'));
+  var prog = document.getElementById('progress');
+  var ticks = [];
+  slides.forEach(function(s, i){
+    var b = document.createElement('i');
+    prog.appendChild(b);
+    ticks.push(b);
+  });
+
+  function fit(){
+    var w = window.innerWidth, h = window.innerHeight;
+    var s = Math.min(w / 1920, h / 1080);
+    deck.style.transform = 'translate(-50%,-50%) scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  fit();
+
+  var reduce = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+  var isStatic = /[?&]static\b/.test(location.search);
+  if(isStatic) document.documentElement.classList.add('static');
+
+  var current = -1;
+  function go(n){
+    n = Math.max(0, Math.min(slides.length - 1, n));
+    if(n === current) return;
+    if(current >= 0) slides[current].classList.remove('current');
+    current = n;
+    slides[n].classList.add('current');
+    ticks.forEach(function(t, i){ t.classList.toggle('on', i <= n); });
+    try { history.replaceState(null, '', '#' + (n + 1)); } catch(err){}
+  }
+
+  document.addEventListener('keydown', function(e){
+    if(['ArrowRight','PageDown',' ','Enter'].indexOf(e.key) > -1){ e.preventDefault(); go(current + 1); }
+    if(['ArrowLeft','PageUp','Backspace'].indexOf(e.key) > -1){ e.preventDefault(); go(current - 1); }
+    if(e.key === 'Home') go(0);
+    if(e.key === 'End') go(slides.length - 1);
+    if(e.key === 'f' || e.key === 'F'){
+      try {
+        if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else document.exitFullscreen();
+      } catch(err){}
+    }
+  });
+
+  deck.addEventListener('click', function(e){
+    var x = e.clientX / window.innerWidth;
+    go(current + (x < 0.25 ? -1 : 1));
+  });
+
+  var hint = document.querySelector('.hint');
+  setTimeout(function(){ hint.classList.add('gone'); }, 4000);
+
+  var start = 0;
+  try { start = parseInt((location.hash || '#1').slice(1), 10) - 1; } catch(err){}
+  go(isNaN(start) ? 0 : start);
+})();
+</script>
+</body>
+</html>

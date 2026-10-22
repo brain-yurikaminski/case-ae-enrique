@@ -1,0 +1,491 @@
+{
+  "agg_monthly_kpis": {
+    "description": [
+      {
+        "column_name": "mes",
+        "column_type": "VARCHAR",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "pontos_creditados",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "total_pontos_resgatados",
+        "column_type": "HUGEINT",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "pontos_expirados",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "pontos_aereas",
+        "column_type": "HUGEINT",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "pontos_varejo",
+        "column_type": "HUGEINT",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "pontos_pix",
+        "column_type": "HUGEINT",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "share_aereas_pct",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "share_varejo_pct",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "share_pix_pct",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "meta_aereas_atingida",
+        "column_type": "BOOLEAN",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "meta_varejo_atingida",
+        "column_type": "BOOLEAN",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "custo_total_programa_reais",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "custo_medio_por_ponto",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "transacoes_pix_aprovadas",
+        "column_type": "BIGINT",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "reais_pix_aprovados",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "taxa_real_pix_por_ponto",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "usuarios_resgatantes_unicos",
+        "column_type": "BIGINT",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      }
+    ],
+    "row_count": 12
+  },
+  "agg_category_card_class_monthly": {
+    "description": [
+      {
+        "column_name": "mes",
+        "column_type": "VARCHAR",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "category_macro",
+        "column_type": "VARCHAR",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "card_class",
+        "column_type": "VARCHAR",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "channel",
+        "column_type": "VARCHAR",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "total_itens",
+        "column_type": "BIGINT",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "usuarios_unicos",
+        "column_type": "BIGINT",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "total_pontos",
+        "column_type": "HUGEINT",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "total_valor_reais",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "total_coparticipacao_reais",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "custo_liquido_programa_reais",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "custo_ponto_reais",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      }
+    ],
+    "row_count": 346
+  },
+  "agg_pix_crm_cohorts": {
+    "description": [
+      {
+        "column_name": "crm_pix_cohort",
+        "column_type": "VARCHAR",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "total_usuarios",
+        "column_type": "BIGINT",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "usuarios_resgataram_pix",
+        "column_type": "BIGINT",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "taxa_conversao_pct",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "total_pontos_pix",
+        "column_type": "HUGEINT",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "total_reais_pix",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "ticket_medio_pontos_pix",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      }
+    ],
+    "row_count": 5
+  },
+  "agg_breakage_analysis": {
+    "description": [
+      {
+        "column_name": "safra",
+        "column_type": "VARCHAR",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "pontos_emitidos",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "pontos_resgatados",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "pontos_expirados",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "validade",
+        "column_type": "VARCHAR",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "taxa_breakage_pct",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "taxa_resgate_pct",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "meta_breakage_teto_pct",
+        "column_type": "DECIMAL(3,1)",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "status_governanca",
+        "column_type": "VARCHAR",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "notas",
+        "column_type": "VARCHAR",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      }
+    ],
+    "row_count": 3
+  },
+  "agg_operator_audit": {
+    "description": [
+      {
+        "column_name": "mes",
+        "column_type": "VARCHAR",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "relatorio_transacoes",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "sistema_bruto_transacoes",
+        "column_type": "BIGINT",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "sistema_aprovado_transacoes",
+        "column_type": "BIGINT",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "relatorio_pontos",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "sistema_bruto_pontos",
+        "column_type": "HUGEINT",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "sistema_aprovado_pontos",
+        "column_type": "HUGEINT",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "relatorio_reais",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "sistema_aprovado_reais",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "relatorio_taxa_calculada",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "sistema_taxa_aprovada_real",
+        "column_type": "DOUBLE",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      },
+      {
+        "column_name": "diagnostico_auditoria",
+        "column_type": "VARCHAR",
+        "null": "YES",
+        "key": null,
+        "default": null,
+        "extra": null
+      }
+    ],
+    "row_count": 5
+  }
+}

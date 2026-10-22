@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pontua+ | Dashboard Estratégico da Diretoria</title>
+  <script src="lib/chart.umd.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #1E2BFF;
+      --primary-light: #4D5AFF;
+      --accent-data: #00CFFF;
+      --accent-synapse: #3DFF6E;
+      --warning: #FFB300;
+      --error: #FF4D6D;
+      --bg-deep: #060A1C;
+      --bg-surface: #0E142F;
+      --bg-card: #141C3E;
+      --bg-hover: #1C2754;
+      --border-color: #212C5B;
+      --text-hi: #EAF0FF;
+      --text-mid: #A9B4D0;
+      --text-low: #6B7699;
+      --font-mono: 'Roboto Mono', monospace;
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-deep);
+      color: var(--text-hi);
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.5;
+      padding-bottom: 60px;
+      overflow-x: hidden;
+    }
+
+    /* HEADER */
+    header {
+      background: rgba(14, 20, 47, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-badge {
+      background: var(--primary);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      padding: 4px 8px;
+    }
+
+    .brand-title {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      color: var(--text-hi);
+    }
+
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--text-mid);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background: rgba(255, 77, 109, 0.12);
+      border: 1px solid var(--error);
+      color: var(--error);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--error);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    /* CONTAINER */
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 24px 32px;
+    }
+
+    /* NAV TABS */
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 24px;
+      padding-bottom: 8px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-mid);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-hi);
+      background: var(--bg-surface);
+    }
+
+    .tab-btn.active {
+      background: var(--bg-card);
+      border: 1px solid var(--accent-data);
+      color: var(--accent-data);
+    }
+
+    /* SCORECARDS */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      padding: 20px;
+      position: relative;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .kpi-card:hover {
+      border-color: var(--primary-light);
+      transform: translateY(-2px);
+    }
+
+    .kpi-overline {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--text-low);
+      margin-bottom: 6px;
+    }
+
+    .kpi-value {
+      font-family: var(--font-mono);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-hi);
+      margin-bottom: 4px;
+    }
+
+    .kpi-subtext {
+      font-size: 12px;
+      color: var(--text-mid);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-ok {
+      color: var(--accent-synapse);
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    .badge-bad {
+      color: var(--error);
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    .badge-warn {
+      color: var(--warning);
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    /* GRID LAYOUTS */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    .grid-3col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    /* CARDS */
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      padding: 24px;
+      position: relative;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 12px;
+    }
+
+    .card-title {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-hi);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: var(--text-mid);
+      margin-top: 4px;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 320px;
+      width: 100%;
+    }
+
+    /* TABLES */
+    .table-container {
+      overflow-x: auto;
+      max-height: 480px;
+      border: 1px solid var(--border-color);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    th {
+      background: var(--bg-card);
+      color: var(--text-hi);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(33, 44, 91, 0.4);
+      color: var(--text-mid);
+      white-space: nowrap;
+    }
+
+    tr:hover td {
+      background: rgba(30, 43, 255, 0.05);
+      color: var(--text-hi);
+    }
+
+    .mono {
+      font-family: var(--font-mono);
+    }
+
+    /* AUDIT CALLOUT BOXES */
+    .audit-box {
+      padding: 18px;
+      border-left: 4px solid var(--primary);
+      background: var(--bg-card);
+      margin-bottom: 16px;
+    }
+
+    .audit-box.danger {
+      border-left-color: var(--error);
+      background: rgba(255, 77, 109, 0.06);
+    }
+
+    .audit-box.success {
+      border-left-color: var(--accent-synapse);
+      background: rgba(61, 255, 110, 0.06);
+    }
+
+    .audit-box.warning {
+      border-left-color: var(--warning);
+      background: rgba(255, 179, 0, 0.06);
+    }
+
+    .audit-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .audit-title {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text-hi);
+    }
+
+    .audit-verdict {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 2px 8px;
+      font-weight: 700;
+    }
+
+    .audit-verdict.false {
+      background: var(--error);
+      color: #fff;
+    }
+
+    .audit-body {
+      font-size: 13px;
+      color: var(--text-mid);
+      line-height: 1.6;
+    }
+
+    /* UNIT ECONOMICS BOX */
+    .unit-economics-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .unit-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+    }
+
+    .unit-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .unit-name {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--text-hi);
+    }
+
+    .unit-sub {
+      font-size: 11px;
+      color: var(--text-low);
+    }
+
+    .unit-cost {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    /* TAB CONTENT TOGGLE */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* FOOTER */
+    footer {
+      margin-top: 40px;
+      border-top: 1px solid var(--border-color);
+      padding: 24px 32px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-low);
+    }
+
+    @media (max-width: 1024px) {
+      .dashboard-grid, .grid-2col {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <div class="brand-badge">BRAIN003</div>
+      <div>
+        <div class="brand-title">PONTUA+ // DASHBOARD ESTRATÉGICO</div>
+        <div class="brand-subtitle">Banco Aurora · Análise Executiva de Desempenho & Auditoria do Pix</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="status-pill">
+        <div class="status-dot"></div>
+        <span>ALERTA CONTRATUAL: VAREJO &lt; 20%</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- NAVIGATION TABS -->
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('tab-visao-geral')">01 // VISÃO ESTRATÉGICA & METAS</button>
+      <button class="tab-btn" onclick="switchTab('tab-auditoria')">02 // AUDITORIA DAS 3 AFIRMAÇÕES</button>
+      <button class="tab-btn" onclick="switchTab('tab-economics')">03 // ECONOMIA UNITÁRIA & CUSTOS</button>
+      <button class="tab-btn" onclick="switchTab('tab-segmentacao')">04 // SEGMENTAÇÃO DE CLIENTES</button>
+      <button class="tab-btn" onclick="switchTab('tab-dados')">05 // TABELA DE DADOS & KPIS</button>
+    </div>
+
+    <!-- SCORECARDS (SEMPRE VISÍVEIS) -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-overline">Volume Resgatado (Ano)</div>
+        <div class="kpi-value" id="kpi-vol-total">320,3 M</div>
+        <div class="kpi-subtext">Pós-Pix: +103% no volume mensal</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-overline">Share Varejo Atual (Set/26)</div>
+        <div class="kpi-value badge-bad" id="kpi-share-varejo">13,0%</div>
+        <div class="kpi-subtext">Meta: &ge; 20,0% <span class="badge-bad">(-7,0 p.p. Inadimplente)</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-overline">Share Aéreas Atual (Set/26)</div>
+        <div class="kpi-value badge-warn" id="kpi-share-aereas">59,0%</div>
+        <div class="kpi-subtext">Meta: &ge; 50,0% <span class="badge-ok">(Margem de +9,0 p.p.)</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-overline">Impacto Pix (Acumulado)</div>
+        <div class="kpi-value badge-bad" id="kpi-pix-val">R$ 721,6 mil</div>
+        <div class="kpi-subtext">37,98 M pontos a R$ 0,0190/pt</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-overline">Breakage Real (Migração)</div>
+        <div class="kpi-value badge-ok" id="kpi-breakage">19,78%</div>
+        <div class="kpi-subtext">Teto: &le; 20,0% <span class="badge-ok">(Conforme)</span></div>
+      </div>
+    </div>
+
+    <!-- TAB 1: VISÃO GERAL & METAS -->
+    <div id="tab-visao-geral" class="tab-content active">
+      <div class="dashboard-grid">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">EVOLUÇÃO DOS SHARES DE RESGATE VS METAS CONTRATUAIS (%)</div>
+              <div class="card-desc">Acompanhamento mensal da composição de resgate e violação do contrato de Varejo</div>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="chartShares"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">VOLUME ABSOLUTO DE PONTOS (M)</div>
+              <div class="card-desc">Efeito de diluição do denominador causado pelo Pix</div>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="chartVolume"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2col">
+        <div class="audit-box danger">
+          <div class="audit-header">
+            <span class="audit-title">DIAGNÓSTICO DA QUEBRA DA META DE VAREJO</span>
+            <span class="audit-verdict false">CRÍTICO</span>
+          </div>
+          <div class="audit-body">
+            O Varejo caiu de <strong>20,3% (mai/26)</strong> para <strong>13,0% (set/26)</strong>. No entanto, o volume absoluto em Varejo permaneceu estável em <strong>~4,0 a 4,3 milhões de pontos/mês</strong>. 
+            O descumprimento contratual é fruto exclusivo do <strong>efeito diluição</strong>: a injeção repentina de 9,4 milhões de pontos mensais em Pix expandiu o denominador em +55%, derrubando o percentual de Varejo.
+          </div>
+        </div>
+
+        <div class="audit-box warning">
+          <div class="audit-header">
+            <span class="audit-title">PRESSÃO NA META DE PASSAGENS AÉREAS</span>
+            <span class="audit-verdict false">ATENÇÃO</span>
+          </div>
+          <div class="audit-body">
+            O share de passagens aéreas caiu de <strong>80,7%</strong> para <strong>56,3% em junho</strong> e está atualmente em <strong>59,0%</strong>. 
+            Embora ainda cumpra o piso contratual de 50%, a margem de segurança foi severamente reduzida para apenas 9 pontos percentuais.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: AUDITORIA DAS 3 AFIRMAÇÕES -->
+    <div id="tab-auditoria" class="tab-content">
+      <div class="grid-3col">
+        
+        <!-- AFIRMAÇÃO 1: CRM -->
+        <div class="card">
+          <div class="audit-header">
+            <span class="card-title">01 // CRM MARKETING</span>
+            <span class="audit-verdict false">FALSA</span>
+          </div>
+          <p style="font-size: 13px; font-style: italic; color: var(--text-hi); margin-bottom: 12px;">
+            "A comunicação de lançamento explica o sucesso do Pix."
+          </p>
+          <div class="chart-container" style="height: 220px;">
+            <canvas id="chartCrm"></canvas>
+          </div>
+          <div class="audit-body" style="margin-top: 16px;">
+            • Apenas <strong>39 dos 2.140 clientes Pix</strong> (1,8%) clicaram no e-mail de lançamento.<br>
+            • Usuários <strong>não impactados</strong> tiveram conversão de <strong>18,13%</strong>, superior a quem clicou (<strong>15,48%</strong>).<br>
+            • Adoção foi 100% orgânica pela atratividade do produto.
+          </div>
+        </div>
+
+        <!-- AFIRMAÇÃO 2: OPERADOR -->
+        <div class="card">
+          <div class="audit-header">
+            <span class="card-title">02 // TAXA DO OPERADOR</span>
+            <span class="audit-verdict false">ERRO DE CÁLCULO</span>
+          </div>
+          <p style="font-size: 13px; font-style: italic; color: var(--text-hi); margin-bottom: 12px;">
+            "Na verdade o Pix sai a cerca de R$ 0,016 por ponto."
+          </p>
+          <div class="chart-container" style="height: 220px;">
+            <canvas id="chartTaxaPix"></canvas>
+          </div>
+          <div class="audit-body" style="margin-top: 16px;">
+            • O programa pagou rigorosamente <strong>R$ 0,019000 por ponto</strong> em todos os 2.808 pedidos aprovados.<br>
+            • <strong>Origem do erro:</strong> O operador somou pedidos cancelados e estornados no denominador (pontos brutos), mas dividiu apenas pelos reais aprovados.<br>
+            • Discrepância auditada e reconciliada em 100%.
+          </div>
+        </div>
+
+        <!-- AFIRMAÇÃO 3: DIRETOR / BREAKAGE -->
+        <div class="card">
+          <div class="audit-header">
+            <span class="card-title">03 // BREAKAGE</span>
+            <span class="audit-verdict false">CONFUSÃO CONCEITUAL</span>
+          </div>
+          <p style="font-size: 13px; font-style: italic; color: var(--text-hi); margin-bottom: 12px;">
+            "Nosso breakage está em 40%! Nossa meta é não passar de 20%!"
+          </p>
+          <div class="chart-container" style="height: 220px;">
+            <canvas id="chartBreakage"></canvas>
+          </div>
+          <div class="audit-body" style="margin-top: 16px;">
+            • O diretor confundiu <strong>Taxa de Resgate (42,45%)</strong> com <strong>Breakage</strong>.<br>
+            • O Breakage real da base migrada é <strong>19,78%</strong>, dentro da meta de &le; 20%.<br>
+            • Os créditos novos expiram em 24 meses (apenas a partir de Set/2027), tendo breakage atual de <strong>0,0%</strong>.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB 3: ECONOMIA UNITÁRIA & CUSTOS -->
+    <div id="tab-economics" class="tab-content">
+      <div class="dashboard-grid">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">COMPARATIVO DE CUSTO LÍQUIDO POR PONTO RESGATADO (R$)</div>
+              <div class="card-desc">Custo efetivo desembolsado pelo programa por categoria de produto</div>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="chartUnitCosts"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">ESTRUTURA DE CUSTOS UNITÁRIOS</div>
+              <div class="card-desc">Diferencial de margem por parceiro</div>
+            </div>
+          </div>
+          <div class="unit-economics-list">
+            <div class="unit-item">
+              <div class="unit-meta">
+                <span class="unit-name">Pix Pontua+ (Cashback)</span>
+                <span class="unit-sub">Dinheiro na conta (Mais oneroso ao programa)</span>
+              </div>
+              <div class="unit-cost badge-bad">R$ 0,01900</div>
+            </div>
+            <div class="unit-item">
+              <div class="unit-meta">
+                <span class="unit-name">Passagens Aéreas (Líquido)</span>
+                <span class="unit-sub">Após coparticipação em dinheiro do cliente</span>
+              </div>
+              <div class="unit-cost badge-warn">R$ 0,01500</div>
+            </div>
+            <div class="unit-item">
+              <div class="unit-meta">
+                <span class="unit-name">Varejo: Produtos (Casa&Cia, Tech10, Mega)</span>
+                <span class="unit-sub">Parceiros próprios do grupo empresarial</span>
+              </div>
+              <div class="unit-cost badge-ok">R$ 0,01390</div>
+            </div>
+            <div class="unit-item">
+              <div class="unit-meta">
+                <span class="unit-name">Varejo: Transferências (Nuvem, Pontos Max)</span>
+                <span class="unit-sub">Parceiros de fidelidade integrados</span>
+              </div>
+              <div class="unit-cost badge-ok">R$ 0,01250</div>
+            </div>
+          </div>
+          <div class="audit-box danger" style="margin-top: 16px;">
+            <div class="audit-body">
+              <strong>Impacto Financeiro Negativo:</strong> O Pix custa <strong>26,7% mais caro</strong> por ponto do que Aéreas e <strong>52,0% mais caro</strong> do que Varejo Parceiros. Cada resgate via Pix destrói rentabilidade e afasta o programa das metas contratuais.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: SEGMENTAÇÃO DE CLIENTES -->
+    <div id="tab-segmentacao" class="tab-content">
+      <div class="grid-2col">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">PENETRAÇÃO DO PIX POR CLASSE DE CARTÃO (PÓS-PIX)</div>
+              <div class="card-desc">% do volume de resgate em Pix por classe de cartão (Jun a Set/26)</div>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="chartCardShare"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">DISTRIBUIÇÃO DE CANAIS (APP VS WEB)</div>
+              <div class="card-desc">Volume de pontos transacionados por ponto de contato</div>
+            </div>
+          </div>
+          <div class="chart-container">
+            <canvas id="chartChannels"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 5: TABELA DE DADOS & KPIS -->
+    <div id="tab-dados" class="tab-content">
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">SÉRIE HISTÓRICA MENSAL DO PROGRAMA (OUT/2025 A SET/2026)</div>
+            <div class="card-desc">Dados agregados certificados pelo pipeline analítico</div>
+          </div>
+        </div>
+        <div class="table-container">
+          <table id="tableMonthly">
+            <thead>
+              <tr>
+                <th>Mês</th>
+                <th>Créditos (M)</th>
+                <th>Resgates (M)</th>
+                <th>Aéreas (M)</th>
+                <th>Varejo (M)</th>
+                <th>Pix (M)</th>
+                <th>Share Aéreas</th>
+                <th>Share Varejo</th>
+                <th>Share Pix</th>
+                <th>Custo Total (R$)</th>
+                <th>Custo Médio/Pt</th>
+                <th>Status Metas</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Renderizado via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT FLUTUANTE DO AGENTE IA -->
+    <div id="aiChatDrawer" style="position:fixed; bottom:24px; right:24px; z-index:999; display:flex; flex-direction:column; align-items:flex-end;">
+      <!-- JANELA DE CONVERSA -->
+      <div id="aiChatWindow" style="display:none; width:400px; height:520px; background:var(--bg-card); border:1px solid var(--accent-data); box-shadow:0 12px 36px rgba(0,0,0,0.6); display:flex; flex-direction:column; margin-bottom:12px; overflow:hidden;">
+        <div style="background:var(--bg-surface); padding:12px 16px; border-bottom:1px solid var(--border-color); display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div style="width:8px; height:8px; background:var(--accent-synapse); border-radius:50%;"></div>
+            <strong style="font-family:var(--font-mono); font-size:13px; color:var(--text-hi);">PONTUA+ AI AGENT (GEMINI)</strong>
+          </div>
+          <button onclick="toggleChat()" style="background:none; border:none; color:var(--text-mid); font-size:18px; cursor:pointer;">&times;</button>
+        </div>
+        <div id="aiChatMessages" style="flex:1; padding:16px; overflow-y:auto; display:flex; flex-direction:column; gap:12px; font-size:13px; font-family:var(--font-body); line-height:1.5;">
+          <div style="background:var(--bg-surface); padding:10px 14px; border-left:3px solid var(--accent-data); color:var(--text-hi);">
+            Olá! Sou o <strong>Agente Analítico do Pontua+</strong>. Posso responder dúvidas sobre o impacto do Pix, metas contratuais, custos por modalidade ou auditoria das afirmações da diretoria.
+          </div>
+        </div>
+        <div style="padding:12px; background:var(--bg-surface); border-top:1px solid var(--border-color); display:flex; gap:8px;">
+          <input type="text" id="aiChatInput" placeholder="Faça uma pergunta executiva..." onkeypress="if(event.key==='Enter') sendChatMessage()" style="flex:1; background:var(--bg-deep); border:1px solid var(--border-color); color:#fff; padding:8px 12px; font-family:var(--font-mono); font-size:12px; outline:none;">
+          <button onclick="sendChatMessage()" style="background:var(--primary); color:#fff; border:none; padding:8px 14px; font-family:var(--font-mono); font-size:12px; font-weight:700; cursor:pointer;">ENVIAR</button>
+        </div>
+      </div>
+
+      <!-- BOTÃO FLUTUANTE -->
+      <button onclick="toggleChat()" style="background:var(--primary); color:#fff; border:1px solid var(--accent-data); padding:12px 20px; font-family:var(--font-mono); font-size:13px; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:10px; box-shadow:0 4px 16px rgba(30,43,255,0.4);">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        <span>CONSULTAR AGENTE IA</span>
+      </button>
+    </div>
+
+  </div>
+
+  <footer>
+    PONTUA+ INTELLIGENCE LAB · DESENVOLVIDO PARA AVALIAÇÃO ANALYTICS ENGINEER · BANCO AURORA / BRAIN003
+  </footer>
+
+  <!-- SCRIPT COM DADOS EMBUTIDOS E RENDERIZAÇÃO DOS GRÁFICOS -->
+  <script>
+    // DADOS EMBUTIDOS GERADOS PELO PIPELINE
+    const monthlyKpis = [{"mes": "2025-10", "pontos_creditados": 27866540.0, "total_pontos_resgatados": 8675840.0, "pontos_expirados": 0.0, "pontos_aereas": 6862800.0, "pontos_varejo": 1813040.0, "pontos_pix": 0.0, "share_aereas_pct": 79.1, "share_varejo_pct": 20.9, "share_pix_pct": 0.0, "meta_aereas_atingida": true, "meta_varejo_atingida": true, "custo_total_programa_reais": 127719.07, "custo_medio_por_ponto": 0.01472, "transacoes_pix_aprovadas": 0, "reais_pix_aprovados": 0.0, "taxa_real_pix_por_ponto": null, "usuarios_resgatantes_unicos": 397}, {"mes": "2025-11", "pontos_creditados": 349483301.0, "total_pontos_resgatados": 9985804.0, "pontos_expirados": 0.0, "pontos_aereas": 7817300.0, "pontos_varejo": 2168504.0, "pontos_pix": 0.0, "share_aereas_pct": 78.28, "share_varejo_pct": 21.72, "share_pix_pct": 0.0, "meta_aereas_atingida": true, "meta_varejo_atingida": true, "custo_total_programa_reais": 146871.22, "custo_medio_por_ponto": 0.01471, "transacoes_pix_aprovadas": 0, "reais_pix_aprovados": 0.0, "taxa_real_pix_por_ponto": null, "usuarios_resgatantes_unicos": 459}, {"mes": "2025-12", "pontos_creditados": 41813159.0, "total_pontos_resgatados": 12089605.0, "pontos_expirados": 0.0, "pontos_aereas": 9347900.0, "pontos_varejo": 2741705.0, "pontos_pix": 0.0, "share_aereas_pct": 77.32, "share_varejo_pct": 22.68, "share_pix_pct": 0.0, "meta_aereas_atingida": true, "meta_varejo_atingida": true, "custo_total_programa_reais": 177459.4300000001, "custo_medio_por_ponto": 0.01468, "transacoes_pix_aprovadas": 0, "reais_pix_aprovados": 0.0, "taxa_real_pix_por_ponto": null, "usuarios_resgatantes_unicos": 568}, {"mes": "2026-01", "pontos_creditados": 42985032.0, "total_pontos_resgatados": 88492370.0, "pontos_expirados": 7143265.0, "pontos_aereas": 85611500.0, "pontos_varejo": 2880870.0, "pontos_pix": 0.0, "share_aereas_pct": 96.74, "share_varejo_pct": 3.26, "share_pix_pct": 0.0, "meta_aereas_atingida": true, "meta_varejo_atingida": false, "custo_total_programa_reais": 1321911.9499999986, "custo_medio_por_ponto": 0.01494, "transacoes_pix_aprovadas": 0, "reais_pix_aprovados": 0.0, "taxa_real_pix_por_ponto": null, "usuarios_resgatantes_unicos": 2017}, {"mes": "2026-02", "pontos_creditados": 30738796.0, "total_pontos_resgatados": 15857285.0, "pontos_expirados": 7056240.0, "pontos_aereas": 12660000.0, "pontos_varejo": 3197285.0, "pontos_pix": 0.0, "share_aereas_pct": 79.84, "share_varejo_pct": 20.16, "share_pix_pct": 0.0, "meta_aereas_atingida": true, "meta_varejo_atingida": true, "custo_total_programa_reais": 233786.0600000001, "custo_medio_por_ponto": 0.01474, "transacoes_pix_aprovadas": 0, "reais_pix_aprovados": 0.0, "taxa_real_pix_por_ponto": null, "usuarios_resgatantes_unicos": 721}, {"mes": "2026-03", "pontos_creditados": 33894203.0, "total_pontos_resgatados": 19077879.0, "pontos_expirados": 7292194.0, "pontos_aereas": 15005800.0, "pontos_varejo": 4072079.0, "pontos_pix": 0.0, "share_aereas_pct": 78.66, "share_varejo_pct": 21.34, "share_pix_pct": 0.0, "meta_aereas_atingida": true, "meta_varejo_atingida": true, "custo_total_programa_reais": 280120.6299999999, "custo_medio_por_ponto": 0.01468, "transacoes_pix_aprovadas": 0, "reais_pix_aprovados": 0.0, "taxa_real_pix_por_ponto": null, "usuarios_resgatantes_unicos": 861}, {"mes": "2026-04", "pontos_creditados": 35386491.0, "total_pontos_resgatados": 18843476.0, "pontos_expirados": 6926985.0, "pontos_aereas": 15212500.0, "pontos_varejo": 3630976.0, "pontos_pix": 0.0, "share_aereas_pct": 80.73, "share_varejo_pct": 19.27, "share_pix_pct": 0.0, "meta_aereas_atingida": true, "meta_varejo_atingida": false, "custo_total_programa_reais": 277030.6200000002, "custo_medio_por_ponto": 0.0147, "transacoes_pix_aprovadas": 0, "reais_pix_aprovados": 0.0, "taxa_real_pix_por_ponto": null, "usuarios_resgatantes_unicos": 828}, {"mes": "2026-05", "pontos_creditados": 37362245.0, "total_pontos_resgatados": 21528571.0, "pontos_expirados": 7062042.0, "pontos_aereas": 16111500.0, "pontos_varejo": 4365976.0, "pontos_pix": 1051095.0, "share_aereas_pct": 74.84, "share_varejo_pct": 20.28, "share_pix_pct": 4.88, "meta_aereas_atingida": true, "meta_varejo_atingida": true, "custo_total_programa_reais": 321017.5199999998, "custo_medio_por_ponto": 0.01491, "transacoes_pix_aprovadas": 75, "reais_pix_aprovados": 19970.83, "taxa_real_pix_por_ponto": 0.019, "usuarios_resgatantes_unicos": 1012}, {"mes": "2026-06", "pontos_creditados": 40311516.0, "total_pontos_resgatados": 30351519.0, "pontos_expirados": 7229661.0, "pontos_aereas": 17091900.0, "pontos_varejo": 4044484.0, "pontos_pix": 9215135.0, "share_aereas_pct": 56.31, "share_varejo_pct": 13.33, "share_pix_pct": 30.36, "meta_aereas_atingida": true, "meta_varejo_atingida": false, "custo_total_programa_reais": 487390.6800000002, "custo_medio_por_ponto": 0.01606, "transacoes_pix_aprovadas": 704, "reais_pix_aprovados": 175087.9499999998, "taxa_real_pix_por_ponto": 0.019, "usuarios_resgatantes_unicos": 1407}, {"mes": "2026-07", "pontos_creditados": 42012689.0, "total_pontos_resgatados": 30543379.0, "pontos_expirados": 7347594.0, "pontos_aereas": 17687900.0, "pontos_varejo": 3894815.0, "pontos_pix": 8960664.0, "share_aereas_pct": 57.91, "share_varejo_pct": 12.75, "share_pix_pct": 29.34, "meta_aereas_atingida": true, "meta_varejo_atingida": false, "custo_total_programa_reais": 489078.7599999995, "custo_medio_por_ponto": 0.01601, "transacoes_pix_aprovadas": 648, "reais_pix_aprovados": 170253.03, "taxa_real_pix_por_ponto": 0.019, "usuarios_resgatantes_unicos": 1364}, {"mes": "2026-08", "pontos_creditados": 43029934.0, "total_pontos_resgatados": 31351709.0, "pontos_expirados": 7007933.0, "pontos_aereas": 18180800.0, "pontos_varejo": 3804035.0, "pontos_pix": 9366874.0, "share_aereas_pct": 57.99, "share_varejo_pct": 12.13, "share_pix_pct": 29.88, "meta_aereas_atingida": true, "meta_varejo_atingida": false, "custo_total_programa_reais": 502879.9100000003, "custo_medio_por_ponto": 0.01604, "transacoes_pix_aprovadas": 677, "reais_pix_aprovados": 177970.8699999999, "taxa_real_pix_por_ponto": 0.019, "usuarios_resgatantes_unicos": 1390}, {"mes": "2026-09", "pontos_creditados": 36774000.0, "total_pontos_resgatados": 33484386.0, "pontos_expirados": 7024891.0, "pontos_aereas": 19762300.0, "pontos_varejo": 4336420.0, "pontos_pix": 9385666.0, "share_aereas_pct": 59.02, "share_varejo_pct": 12.95, "share_pix_pct": 28.03, "meta_aereas_atingida": true, "meta_varejo_atingida": false, "custo_total_programa_reais": 534772.1899999988, "custo_medio_por_ponto": 0.01597, "transacoes_pix_aprovadas": 704, "reais_pix_aprovados": 178328.0499999998, "taxa_real_pix_por_ponto": 0.019, "usuarios_resgatantes_unicos": 1546}];
+    const crmCohorts = [{"crm_pix_cohort": "1. Clicou no Email", "total_usuarios": 252, "usuarios_resgataram_pix": 39, "taxa_conversao_pct": 15.48, "total_pontos_pix": 621925.0, "total_reais_pix": 11816.6, "ticket_medio_pontos_pix": 15946.8}, {"crm_pix_cohort": "2. Visualizou (sem clicar)", "total_usuarios": 2490, "usuarios_resgataram_pix": 443, "taxa_conversao_pct": 17.79, "total_pontos_pix": 7645303.0, "total_reais_pix": 145261.01, "ticket_medio_pontos_pix": 17258.0}, {"crm_pix_cohort": "3. Recebeu (sem visualizar)", "total_usuarios": 6542, "usuarios_resgataram_pix": 1174, "taxa_conversao_pct": 17.95, "total_pontos_pix": 21122782.0, "total_reais_pix": 401333.6500000001, "ticket_medio_pontos_pix": 17992.1}, {"crm_pix_cohort": "4. Falha no envio", "total_usuarios": 316, "usuarios_resgataram_pix": 49, "taxa_conversao_pct": 15.51, "total_pontos_pix": 924745.0, "total_reais_pix": 17570.17, "ticket_medio_pontos_pix": 18872.3}, {"crm_pix_cohort": "5. Nao impactado pela campanha", "total_usuarios": 2400, "usuarios_resgataram_pix": 435, "taxa_conversao_pct": 18.13, "total_pontos_pix": 7664679.0, "total_reais_pix": 145629.3, "ticket_medio_pontos_pix": 17620.0}];
+    const operatorAudit = [{"mes": "2026-05", "relatorio_transacoes": 85.0, "sistema_bruto_transacoes": 85, "sistema_aprovado_transacoes": 75, "relatorio_pontos": 1202701.0, "sistema_bruto_pontos": 1202701.0, "sistema_aprovado_pontos": 1051095.0, "relatorio_reais": 19921.29, "sistema_aprovado_reais": 19970.83, "relatorio_taxa_calculada": 0.01656, "sistema_taxa_aprovada_real": 0.019, "diagnostico_auditoria": "O operador somou pedidos cancelados/estornados no denominador (pontos e transa\u00e7\u00f5es), mas usou reais aprovados, subavaliando a taxa de 0.019 para ~0.016."}, {"mes": "2026-06", "relatorio_transacoes": 822.0, "sistema_bruto_transacoes": 822, "sistema_aprovado_transacoes": 704, "relatorio_pontos": 10709419.0, "sistema_bruto_pontos": 10709419.0, "sistema_aprovado_pontos": 9215135.0, "relatorio_reais": 174261.75, "sistema_aprovado_reais": 175087.9499999998, "relatorio_taxa_calculada": 0.01627, "sistema_taxa_aprovada_real": 0.019, "diagnostico_auditoria": "O operador somou pedidos cancelados/estornados no denominador (pontos e transa\u00e7\u00f5es), mas usou reais aprovados, subavaliando a taxa de 0.019 para ~0.016."}, {"mes": "2026-07", "relatorio_transacoes": 759.0, "sistema_bruto_transacoes": 759, "sistema_aprovado_transacoes": 648, "relatorio_pontos": 10445204.0, "sistema_bruto_pontos": 10445204.0, "sistema_aprovado_pontos": 8960664.0, "relatorio_reais": 169868.42, "sistema_aprovado_reais": 170253.03, "relatorio_taxa_calculada": 0.01626, "sistema_taxa_aprovada_real": 0.019, "diagnostico_auditoria": "O operador somou pedidos cancelados/estornados no denominador (pontos e transa\u00e7\u00f5es), mas usou reais aprovados, subavaliando a taxa de 0.019 para ~0.016."}, {"mes": "2026-08", "relatorio_transacoes": 783.0, "sistema_bruto_transacoes": 783, "sistema_aprovado_transacoes": 677, "relatorio_pontos": 10672206.0, "sistema_bruto_pontos": 10672206.0, "sistema_aprovado_pontos": 9366874.0, "relatorio_reais": 177263.34, "sistema_aprovado_reais": 177970.8699999999, "relatorio_taxa_calculada": 0.01661, "sistema_taxa_aprovada_real": 0.019, "diagnostico_auditoria": "O operador somou pedidos cancelados/estornados no denominador (pontos e transa\u00e7\u00f5es), mas usou reais aprovados, subavaliando a taxa de 0.019 para ~0.016."}, {"mes": "2026-09", "relatorio_transacoes": 843.0, "sistema_bruto_transacoes": 843, "sistema_aprovado_transacoes": 704, "relatorio_pontos": 11516757.0, "sistema_bruto_pontos": 11516757.0, "sistema_aprovado_pontos": 9385666.0, "relatorio_reais": 177056.0, "sistema_aprovado_reais": 178328.0499999998, "relatorio_taxa_calculada": 0.01537, "sistema_taxa_aprovada_real": 0.019, "diagnostico_auditoria": "O operador somou pedidos cancelados/estornados no denominador (pontos e transa\u00e7\u00f5es), mas usou reais aprovados, subavaliando a taxa de 0.019 para ~0.016."}];
+    const breakageData = [{"safra": "1. Base Migrada (Legado)", "pontos_emitidos": 324024198.0, "pontos_resgatados": null, "pontos_expirados": 64090805.0, "validade": "2028-03-31", "taxa_breakage_pct": 19.78, "taxa_resgate_pct": null, "meta_breakage_teto_pct": 20.0, "status_governanca": "DENTRO DA META (19.78% <= 20.0%)", "notas": "Pontos legados recebidos na migra\u00e7\u00e3o e expirados ao longo de 2026."}, {"safra": "2. Programa Novo (Aurora)", "pontos_emitidos": 437817783.0, "pontos_resgatados": null, "pontos_expirados": 0.0, "validade": "2027-09 a 2028-09", "taxa_breakage_pct": 0.0, "taxa_resgate_pct": null, "meta_breakage_teto_pct": 20.0, "status_governanca": "EM VIGOR (Validade de 24 meses; expira a partir de Set/2027)", "notas": "Ac\u00famulos gerados no cart\u00e3o de cr\u00e9dito do Banco Aurora."}, {"safra": "3. Consolidado do Programa", "pontos_emitidos": 765238192.0, "pontos_resgatados": 323423650.0, "pontos_expirados": 64090805.0, "validade": "2027 a 2028", "taxa_breakage_pct": 8.38, "taxa_resgate_pct": 42.26, "meta_breakage_teto_pct": 20.0, "status_governanca": "CONFUSAO DO DIRETOR: 42.4% e taxa de resgate, nao breakage!", "notas": "O diretor confundiu taxa de resgate (42.45%) com taxa de expira\u00e7\u00e3o (breakage real = 8.38% total / 19.78% migra\u00e7\u00e3o)."}];
+    const categoryCardData = [{"mes": "2025-10", "category_macro": "Aereas", "card_class": "Black", "channel": "APP", "total_itens": 22, "usuarios_unicos": 19, "total_pontos": 537000.0, "total_valor_reais": 8544.11, "total_coparticipacao_reais": 437.75, "custo_liquido_programa_reais": 8106.36, "custo_ponto_reais": 0.0151}, {"mes": "2025-10", "category_macro": "Aereas", "card_class": "Black", "channel": "WEB", "total_itens": 12, "usuarios_unicos": 12, "total_pontos": 358000.0, "total_valor_reais": 5588.57, "total_coparticipacao_reais": 194.98, "custo_liquido_programa_reais": 5393.59, "custo_ponto_reais": 0.01507}, {"mes": "2025-10", "category_macro": "Aereas", "card_class": "Essencial", "channel": "APP", "total_itens": 56, "usuarios_unicos": 48, "total_pontos": 922300.0, "total_valor_reais": 14459.15, "total_coparticipacao_reais": 507.41, "custo_liquido_programa_reais": 13951.74, "custo_ponto_reais": 0.01513}, {"mes": "2025-10", "category_macro": "Aereas", "card_class": "Essencial", "channel": "WEB", "total_itens": 34, "usuarios_unicos": 32, "total_pontos": 720400.0, "total_valor_reais": 11531.4, "total_coparticipacao_reais": 699.95, "custo_liquido_programa_reais": 10831.45, "custo_ponto_reais": 0.01504}, {"mes": "2025-10", "category_macro": "Aereas", "card_class": "Gold", "channel": "APP", "total_itens": 34, "usuarios_unicos": 34, "total_pontos": 631500.0, "total_valor_reais": 9712.98, "total_coparticipacao_reais": 185.67, "custo_liquido_programa_reais": 9527.31, "custo_ponto_reais": 0.01509}, {"mes": "2025-10", "category_macro": "Aereas", "card_class": "Gold", "channel": "WEB", "total_itens": 20, "usuarios_unicos": 20, "total_pontos": 464100.0, "total_valor_reais": 7279.83, "total_coparticipacao_reais": 258.01, "custo_liquido_programa_reais": 7021.82, "custo_ponto_reais": 0.01513}, {"mes": "2025-10", "category_macro": "Aereas", "card_class": "Infinite", "channel": "APP", "total_itens": 24, "usuarios_unicos": 20, "total_pontos": 794700.0, "total_valor_reais": 12916.73, "total_coparticipacao_reais": 1078.31, "custo_liquido_programa_reais": 11838.42, "custo_ponto_reais": 0.0149}, {"mes": "2025-10", "category_macro": "Aereas", "card_class": "Infinite", "channel": "WEB", "total_itens": 11, "usuarios_unicos": 11, "total_pontos": 339100.0, "total_valor_reais": 5962.35, "total_coparticipacao_reais": 955.79, "custo_liquido_programa_reais": 5006.56, "custo_ponto_reais": 0.01476}, {"mes": "2025-10", "category_macro": "Aereas", "card_class": "Platinum", "channel": "APP", "total_itens": 41, "usuarios_unicos": 36, "total_pontos": 963000.0, "total_valor_reais": 16584.26, "total_coparticipacao_reais": 2129.68, "custo_liquido_programa_reais": 14454.58, "custo_ponto_reais": 0.01501}, {"mes": "2025-10", "category_macro": "Aereas", "card_class": "Platinum", "channel": "WEB", "total_itens": 23, "usuarios_unicos": 19, "total_pontos": 547700.0, "total_valor_reais": 8375.79, "total_coparticipacao_reais": 209.13, "custo_liquido_programa_reais": 8166.66, "custo_ponto_reais": 0.01491}, {"mes": "2025-10", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 18, "usuarios_unicos": 17, "total_pontos": 387900.0, "total_valor_reais": 6791.35, "total_coparticipacao_reais": 924.56, "custo_liquido_programa_reais": 5866.79, "custo_ponto_reais": 0.01512}, {"mes": "2025-10", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 7, "usuarios_unicos": 7, "total_pontos": 197100.0, "total_valor_reais": 3257.1, "total_coparticipacao_reais": 312.23, "custo_liquido_programa_reais": 2944.87, "custo_ponto_reais": 0.01494}, {"mes": "2025-10", "category_macro": "Varejo", "card_class": "Black", "channel": "APP", "total_itens": 16, "usuarios_unicos": 15, "total_pontos": 109933.0, "total_valor_reais": 2045.51, "total_coparticipacao_reais": 541.39, "custo_liquido_programa_reais": 1504.12, "custo_ponto_reais": 0.01368}, {"mes": "2025-10", "category_macro": "Varejo", "card_class": "Black", "channel": "WEB", "total_itens": 8, "usuarios_unicos": 7, "total_pontos": 37035.0, "total_valor_reais": 1108.15, "total_coparticipacao_reais": 607.36, "custo_liquido_programa_reais": 500.79, "custo_ponto_reais": 0.01352}, {"mes": "2025-10", "category_macro": "Varejo", "card_class": "Essencial", "channel": "APP", "total_itens": 58, "usuarios_unicos": 52, "total_pontos": 365537.0, "total_valor_reais": 7514.79, "total_coparticipacao_reais": 2567.94, "custo_liquido_programa_reais": 4946.85, "custo_ponto_reais": 0.01353}, {"mes": "2025-10", "category_macro": "Varejo", "card_class": "Essencial", "channel": "WEB", "total_itens": 34, "usuarios_unicos": 31, "total_pontos": 188538.0, "total_valor_reais": 3243.52, "total_coparticipacao_reais": 692.97, "custo_liquido_programa_reais": 2550.55, "custo_ponto_reais": 0.01353}, {"mes": "2025-10", "category_macro": "Varejo", "card_class": "Gold", "channel": "APP", "total_itens": 45, "usuarios_unicos": 38, "total_pontos": 280572.0, "total_valor_reais": 5445.4, "total_coparticipacao_reais": 1624.97, "custo_liquido_programa_reais": 3820.43, "custo_ponto_reais": 0.01362}, {"mes": "2025-10", "category_macro": "Varejo", "card_class": "Gold", "channel": "WEB", "total_itens": 21, "usuarios_unicos": 21, "total_pontos": 138790.0, "total_valor_reais": 2288.65, "total_coparticipacao_reais": 398.11, "custo_liquido_programa_reais": 1890.54, "custo_ponto_reais": 0.01362}, {"mes": "2025-10", "category_macro": "Varejo", "card_class": "Infinite", "channel": "APP", "total_itens": 17, "usuarios_unicos": 14, "total_pontos": 122501.0, "total_valor_reais": 1869.4, "total_coparticipacao_reais": 238.87, "custo_liquido_programa_reais": 1630.53, "custo_ponto_reais": 0.01331}, {"mes": "2025-10", "category_macro": "Varejo", "card_class": "Infinite", "channel": "WEB", "total_itens": 9, "usuarios_unicos": 9, "total_pontos": 76561.0, "total_valor_reais": 1626.3, "total_coparticipacao_reais": 574.71, "custo_liquido_programa_reais": 1051.59, "custo_ponto_reais": 0.01374}, {"mes": "2025-10", "category_macro": "Varejo", "card_class": "Platinum", "channel": "APP", "total_itens": 34, "usuarios_unicos": 31, "total_pontos": 180254.0, "total_valor_reais": 3312.08, "total_coparticipacao_reais": 868.99, "custo_liquido_programa_reais": 2443.09, "custo_ponto_reais": 0.01355}, {"mes": "2025-10", "category_macro": "Varejo", "card_class": "Platinum", "channel": "WEB", "total_itens": 18, "usuarios_unicos": 17, "total_pontos": 112268.0, "total_valor_reais": 1673.22, "total_coparticipacao_reais": 139.58, "custo_liquido_programa_reais": 1533.64, "custo_ponto_reais": 0.01366}, {"mes": "2025-10", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 18, "usuarios_unicos": 15, "total_pontos": 116948.0, "total_valor_reais": 1814.51, "total_coparticipacao_reais": 238.07, "custo_liquido_programa_reais": 1576.44, "custo_ponto_reais": 0.01348}, {"mes": "2025-10", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 10, "usuarios_unicos": 10, "total_pontos": 84103.0, "total_valor_reais": 1490.14, "total_coparticipacao_reais": 329.79, "custo_liquido_programa_reais": 1160.35, "custo_ponto_reais": 0.0138}, {"mes": "2025-11", "category_macro": "Aereas", "card_class": "Black", "channel": "APP", "total_itens": 16, "usuarios_unicos": 16, "total_pontos": 574700.0, "total_valor_reais": 8733.47, "total_coparticipacao_reais": 129.48, "custo_liquido_programa_reais": 8603.99, "custo_ponto_reais": 0.01497}, {"mes": "2025-11", "category_macro": "Aereas", "card_class": "Black", "channel": "WEB", "total_itens": 10, "usuarios_unicos": 10, "total_pontos": 233100.0, "total_valor_reais": 4089.24, "total_coparticipacao_reais": 624.86, "custo_liquido_programa_reais": 3464.38, "custo_ponto_reais": 0.01486}, {"mes": "2025-11", "category_macro": "Aereas", "card_class": "Essencial", "channel": "APP", "total_itens": 76, "usuarios_unicos": 69, "total_pontos": 1427200.0, "total_valor_reais": 22831.94, "total_coparticipacao_reais": 1504.61, "custo_liquido_programa_reais": 21327.33, "custo_ponto_reais": 0.01494}, {"mes": "2025-11", "category_macro": "Aereas", "card_class": "Essencial", "channel": "WEB", "total_itens": 29, "usuarios_unicos": 29, "total_pontos": 541200.0, "total_valor_reais": 8962.93, "total_coparticipacao_reais": 783.44, "custo_liquido_programa_reais": 8179.49, "custo_ponto_reais": 0.01511}, {"mes": "2025-11", "category_macro": "Aereas", "card_class": "Gold", "channel": "APP", "total_itens": 43, "usuarios_unicos": 40, "total_pontos": 909800.0, "total_valor_reais": 16395.04, "total_coparticipacao_reais": 2821.13, "custo_liquido_programa_reais": 13573.91, "custo_ponto_reais": 0.01492}, {"mes": "2025-11", "category_macro": "Aereas", "card_class": "Gold", "channel": "WEB", "total_itens": 23, "usuarios_unicos": 22, "total_pontos": 452700.0, "total_valor_reais": 7209.36, "total_coparticipacao_reais": 443.99, "custo_liquido_programa_reais": 6765.37, "custo_ponto_reais": 0.01494}, {"mes": "2025-11", "category_macro": "Aereas", "card_class": "Infinite", "channel": "APP", "total_itens": 26, "usuarios_unicos": 19, "total_pontos": 753000.0, "total_valor_reais": 12776.44, "total_coparticipacao_reais": 1414.35, "custo_liquido_programa_reais": 11362.09, "custo_ponto_reais": 0.01509}, {"mes": "2025-11", "category_macro": "Aereas", "card_class": "Infinite", "channel": "WEB", "total_itens": 15, "usuarios_unicos": 14, "total_pontos": 559700.0, "total_valor_reais": 8924.83, "total_coparticipacao_reais": 410.77, "custo_liquido_programa_reais": 8514.06, "custo_ponto_reais": 0.01521}, {"mes": "2025-11", "category_macro": "Aereas", "card_class": "Platinum", "channel": "APP", "total_itens": 40, "usuarios_unicos": 39, "total_pontos": 1025600.0, "total_valor_reais": 18143.58, "total_coparticipacao_reais": 2709.77, "custo_liquido_programa_reais": 15433.81, "custo_ponto_reais": 0.01505}, {"mes": "2025-11", "category_macro": "Aereas", "card_class": "Platinum", "channel": "WEB", "total_itens": 21, "usuarios_unicos": 18, "total_pontos": 564500.0, "total_valor_reais": 10678.09, "total_coparticipacao_reais": 2245.01, "custo_liquido_programa_reais": 8433.08, "custo_ponto_reais": 0.01494}, {"mes": "2025-11", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 16, "usuarios_unicos": 16, "total_pontos": 435300.0, "total_valor_reais": 6671.58, "total_coparticipacao_reais": 147.27, "custo_liquido_programa_reais": 6524.31, "custo_ponto_reais": 0.01499}, {"mes": "2025-11", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 10, "usuarios_unicos": 10, "total_pontos": 340500.0, "total_valor_reais": 5751.95, "total_coparticipacao_reais": 564.9, "custo_liquido_programa_reais": 5187.05, "custo_ponto_reais": 0.01523}, {"mes": "2025-11", "category_macro": "Varejo", "card_class": "Black", "channel": "APP", "total_itens": 33, "usuarios_unicos": 27, "total_pontos": 184103.0, "total_valor_reais": 4514.4, "total_coparticipacao_reais": 1998.2, "custo_liquido_programa_reais": 2516.2, "custo_ponto_reais": 0.01367}, {"mes": "2025-11", "category_macro": "Varejo", "card_class": "Black", "channel": "WEB", "total_itens": 10, "usuarios_unicos": 10, "total_pontos": 60824.0, "total_valor_reais": 1032.95, "total_coparticipacao_reais": 222.64, "custo_liquido_programa_reais": 810.31, "custo_ponto_reais": 0.01332}, {"mes": "2025-11", "category_macro": "Varejo", "card_class": "Essencial", "channel": "APP", "total_itens": 76, "usuarios_unicos": 62, "total_pontos": 448675.0, "total_valor_reais": 8122.48, "total_coparticipacao_reais": 2038.65, "custo_liquido_programa_reais": 6083.83, "custo_ponto_reais": 0.01356}, {"mes": "2025-11", "category_macro": "Varejo", "card_class": "Essencial", "channel": "WEB", "total_itens": 25, "usuarios_unicos": 25, "total_pontos": 163084.0, "total_valor_reais": 3739.56, "total_coparticipacao_reais": 1500.82, "custo_liquido_programa_reais": 2238.74, "custo_ponto_reais": 0.01373}, {"mes": "2025-11", "category_macro": "Varejo", "card_class": "Gold", "channel": "APP", "total_itens": 45, "usuarios_unicos": 40, "total_pontos": 286352.0, "total_valor_reais": 4959.34, "total_coparticipacao_reais": 1047.24, "custo_liquido_programa_reais": 3912.1, "custo_ponto_reais": 0.01366}, {"mes": "2025-11", "category_macro": "Varejo", "card_class": "Gold", "channel": "WEB", "total_itens": 26, "usuarios_unicos": 26, "total_pontos": 165517.0, "total_valor_reais": 2901.9, "total_coparticipacao_reais": 659.33, "custo_liquido_programa_reais": 2242.57, "custo_ponto_reais": 0.01355}, {"mes": "2025-11", "category_macro": "Varejo", "card_class": "Infinite", "channel": "APP", "total_itens": 29, "usuarios_unicos": 24, "total_pontos": 190259.0, "total_valor_reais": 3760.9, "total_coparticipacao_reais": 1169.09, "custo_liquido_programa_reais": 2591.81, "custo_ponto_reais": 0.01362}, {"mes": "2025-11", "category_macro": "Varejo", "card_class": "Infinite", "channel": "WEB", "total_itens": 10, "usuarios_unicos": 9, "total_pontos": 71964.0, "total_valor_reais": 1120.41, "total_coparticipacao_reais": 127.67, "custo_liquido_programa_reais": 992.74, "custo_ponto_reais": 0.01379}, {"mes": "2025-11", "category_macro": "Varejo", "card_class": "Platinum", "channel": "APP", "total_itens": 35, "usuarios_unicos": 31, "total_pontos": 199147.0, "total_valor_reais": 3243.58, "total_coparticipacao_reais": 543.08, "custo_liquido_programa_reais": 2700.5, "custo_ponto_reais": 0.01356}, {"mes": "2025-11", "category_macro": "Varejo", "card_class": "Platinum", "channel": "WEB", "total_itens": 27, "usuarios_unicos": 24, "total_pontos": 172540.0, "total_valor_reais": 2699.22, "total_coparticipacao_reais": 350.76, "custo_liquido_programa_reais": 2348.46, "custo_ponto_reais": 0.01361}, {"mes": "2025-11", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 26, "usuarios_unicos": 24, "total_pontos": 200164.0, "total_valor_reais": 3638.26, "total_coparticipacao_reais": 922.47, "custo_liquido_programa_reais": 2715.79, "custo_ponto_reais": 0.01357}, {"mes": "2025-11", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 5, "usuarios_unicos": 5, "total_pontos": 25875.0, "total_valor_reais": 519.91, "total_coparticipacao_reais": 170.61, "custo_liquido_programa_reais": 349.3, "custo_ponto_reais": 0.0135}, {"mes": "2025-12", "category_macro": "Aereas", "card_class": "Black", "channel": "APP", "total_itens": 31, "usuarios_unicos": 29, "total_pontos": 890700.0, "total_valor_reais": 14461.48, "total_coparticipacao_reais": 1019.94, "custo_liquido_programa_reais": 13441.54, "custo_ponto_reais": 0.01509}, {"mes": "2025-12", "category_macro": "Aereas", "card_class": "Black", "channel": "WEB", "total_itens": 21, "usuarios_unicos": 21, "total_pontos": 599300.0, "total_valor_reais": 9862.08, "total_coparticipacao_reais": 743.01, "custo_liquido_programa_reais": 9119.07, "custo_ponto_reais": 0.01522}, {"mes": "2025-12", "category_macro": "Aereas", "card_class": "Essencial", "channel": "APP", "total_itens": 77, "usuarios_unicos": 68, "total_pontos": 1547200.0, "total_valor_reais": 27078.15, "total_coparticipacao_reais": 3933.72, "custo_liquido_programa_reais": 23144.43, "custo_ponto_reais": 0.01496}, {"mes": "2025-12", "category_macro": "Aereas", "card_class": "Essencial", "channel": "WEB", "total_itens": 37, "usuarios_unicos": 36, "total_pontos": 716400.0, "total_valor_reais": 11690.28, "total_coparticipacao_reais": 983.94, "custo_liquido_programa_reais": 10706.34, "custo_ponto_reais": 0.01494}, {"mes": "2025-12", "category_macro": "Aereas", "card_class": "Gold", "channel": "APP", "total_itens": 59, "usuarios_unicos": 52, "total_pontos": 1359700.0, "total_valor_reais": 22410.89, "total_coparticipacao_reais": 2084.0, "custo_liquido_programa_reais": 20326.89, "custo_ponto_reais": 0.01495}, {"mes": "2025-12", "category_macro": "Aereas", "card_class": "Gold", "channel": "WEB", "total_itens": 27, "usuarios_unicos": 22, "total_pontos": 479100.0, "total_valor_reais": 7652.22, "total_coparticipacao_reais": 515.39, "custo_liquido_programa_reais": 7136.83, "custo_ponto_reais": 0.0149}, {"mes": "2025-12", "category_macro": "Aereas", "card_class": "Infinite", "channel": "APP", "total_itens": 27, "usuarios_unicos": 24, "total_pontos": 829500.0, "total_valor_reais": 13692.43, "total_coparticipacao_reais": 1151.76, "custo_liquido_programa_reais": 12540.67, "custo_ponto_reais": 0.01512}, {"mes": "2025-12", "category_macro": "Aereas", "card_class": "Infinite", "channel": "WEB", "total_itens": 20, "usuarios_unicos": 19, "total_pontos": 511300.0, "total_valor_reais": 8309.71, "total_coparticipacao_reais": 632.78, "custo_liquido_programa_reais": 7676.93, "custo_ponto_reais": 0.01501}, {"mes": "2025-12", "category_macro": "Aereas", "card_class": "Platinum", "channel": "APP", "total_itens": 49, "usuarios_unicos": 43, "total_pontos": 1088900.0, "total_valor_reais": 19509.88, "total_coparticipacao_reais": 3043.29, "custo_liquido_programa_reais": 16466.59, "custo_ponto_reais": 0.01512}, {"mes": "2025-12", "category_macro": "Aereas", "card_class": "Platinum", "channel": "WEB", "total_itens": 23, "usuarios_unicos": 23, "total_pontos": 402200.0, "total_valor_reais": 6915.45, "total_coparticipacao_reais": 850.12, "custo_liquido_programa_reais": 6065.33, "custo_ponto_reais": 0.01508}, {"mes": "2025-12", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 22, "usuarios_unicos": 20, "total_pontos": 510000.0, "total_valor_reais": 7937.33, "total_coparticipacao_reais": 365.58, "custo_liquido_programa_reais": 7571.75, "custo_ponto_reais": 0.01485}, {"mes": "2025-12", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 15, "usuarios_unicos": 13, "total_pontos": 413600.0, "total_valor_reais": 6546.69, "total_coparticipacao_reais": 411.71, "custo_liquido_programa_reais": 6134.98, "custo_ponto_reais": 0.01483}, {"mes": "2025-12", "category_macro": "Varejo", "card_class": "Black", "channel": "APP", "total_itens": 30, "usuarios_unicos": 29, "total_pontos": 214741.0, "total_valor_reais": 3568.77, "total_coparticipacao_reais": 624.89, "custo_liquido_programa_reais": 2943.88, "custo_ponto_reais": 0.01371}, {"mes": "2025-12", "category_macro": "Varejo", "card_class": "Black", "channel": "WEB", "total_itens": 21, "usuarios_unicos": 19, "total_pontos": 133427.0, "total_valor_reais": 2129.19, "total_coparticipacao_reais": 333.21, "custo_liquido_programa_reais": 1795.98, "custo_ponto_reais": 0.01346}, {"mes": "2025-12", "category_macro": "Varejo", "card_class": "Essencial", "channel": "APP", "total_itens": 66, "usuarios_unicos": 59, "total_pontos": 405170.0, "total_valor_reais": 9545.6, "total_coparticipacao_reais": 4026.99, "custo_liquido_programa_reais": 5518.61, "custo_ponto_reais": 0.01362}, {"mes": "2025-12", "category_macro": "Varejo", "card_class": "Essencial", "channel": "WEB", "total_itens": 41, "usuarios_unicos": 41, "total_pontos": 242897.0, "total_valor_reais": 4724.66, "total_coparticipacao_reais": 1443.16, "custo_liquido_programa_reais": 3281.5, "custo_ponto_reais": 0.01351}, {"mes": "2025-12", "category_macro": "Varejo", "card_class": "Gold", "channel": "APP", "total_itens": 73, "usuarios_unicos": 68, "total_pontos": 432200.0, "total_valor_reais": 7628.1, "total_coparticipacao_reais": 1828.01, "custo_liquido_programa_reais": 5800.09, "custo_ponto_reais": 0.01342}, {"mes": "2025-12", "category_macro": "Varejo", "card_class": "Gold", "channel": "WEB", "total_itens": 38, "usuarios_unicos": 36, "total_pontos": 225304.0, "total_valor_reais": 3679.57, "total_coparticipacao_reais": 640.52, "custo_liquido_programa_reais": 3039.05, "custo_ponto_reais": 0.01349}, {"mes": "2025-12", "category_macro": "Varejo", "card_class": "Infinite", "channel": "APP", "total_itens": 37, "usuarios_unicos": 34, "total_pontos": 296704.0, "total_valor_reais": 5069.64, "total_coparticipacao_reais": 1042.03, "custo_liquido_programa_reais": 4027.61, "custo_ponto_reais": 0.01357}, {"mes": "2025-12", "category_macro": "Varejo", "card_class": "Infinite", "channel": "WEB", "total_itens": 22, "usuarios_unicos": 20, "total_pontos": 168815.0, "total_valor_reais": 3592.86, "total_coparticipacao_reais": 1294.92, "custo_liquido_programa_reais": 2297.94, "custo_ponto_reais": 0.01361}, {"mes": "2025-12", "category_macro": "Varejo", "card_class": "Platinum", "channel": "APP", "total_itens": 41, "usuarios_unicos": 37, "total_pontos": 257641.0, "total_valor_reais": 4857.04, "total_coparticipacao_reais": 1359.81, "custo_liquido_programa_reais": 3497.23, "custo_ponto_reais": 0.01357}, {"mes": "2025-12", "category_macro": "Varejo", "card_class": "Platinum", "channel": "WEB", "total_itens": 21, "usuarios_unicos": 21, "total_pontos": 104259.0, "total_valor_reais": 1787.22, "total_coparticipacao_reais": 375.67, "custo_liquido_programa_reais": 1411.55, "custo_ponto_reais": 0.01354}, {"mes": "2025-12", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 24, "usuarios_unicos": 22, "total_pontos": 145672.0, "total_valor_reais": 2016.99, "total_coparticipacao_reais": 63.55, "custo_liquido_programa_reais": 1953.44, "custo_ponto_reais": 0.01341}, {"mes": "2025-12", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 15, "usuarios_unicos": 15, "total_pontos": 114875.0, "total_valor_reais": 1802.93, "total_coparticipacao_reais": 241.73, "custo_liquido_programa_reais": 1561.2, "custo_ponto_reais": 0.01359}, {"mes": "2026-01", "category_macro": "Aereas", "card_class": "Black", "channel": "APP", "total_itens": 126, "usuarios_unicos": 116, "total_pontos": 5835000.0, "total_valor_reais": 90685.04, "total_coparticipacao_reais": 3127.51, "custo_liquido_programa_reais": 87557.53, "custo_ponto_reais": 0.01501}, {"mes": "2026-01", "category_macro": "Aereas", "card_class": "Black", "channel": "WEB", "total_itens": 65, "usuarios_unicos": 63, "total_pontos": 2659400.0, "total_valor_reais": 40628.29, "total_coparticipacao_reais": 588.77, "custo_liquido_programa_reais": 40039.52, "custo_ponto_reais": 0.01506}, {"mes": "2026-01", "category_macro": "Aereas", "card_class": "Essencial", "channel": "APP", "total_itens": 374, "usuarios_unicos": 358, "total_pontos": 16866700.0, "total_valor_reais": 257658.1200000001, "total_coparticipacao_reais": 4120.76, "custo_liquido_programa_reais": 253537.3600000001, "custo_ponto_reais": 0.01503}, {"mes": "2026-01", "category_macro": "Aereas", "card_class": "Essencial", "channel": "WEB", "total_itens": 205, "usuarios_unicos": 198, "total_pontos": 8636700.0, "total_valor_reais": 134522.4600000001, "total_coparticipacao_reais": 5195.88, "custo_liquido_programa_reais": 129326.5800000001, "custo_ponto_reais": 0.01497}, {"mes": "2026-01", "category_macro": "Aereas", "card_class": "Gold", "channel": "APP", "total_itens": 273, "usuarios_unicos": 265, "total_pontos": 13025400.0, "total_valor_reais": 199959.5000000001, "total_coparticipacao_reais": 4560.16, "custo_liquido_programa_reais": 195399.3400000001, "custo_ponto_reais": 0.015}, {"mes": "2026-01", "category_macro": "Aereas", "card_class": "Gold", "channel": "WEB", "total_itens": 139, "usuarios_unicos": 135, "total_pontos": 6140700.0, "total_valor_reais": 92809.64, "total_coparticipacao_reais": 1020.37, "custo_liquido_programa_reais": 91789.27, "custo_ponto_reais": 0.01495}, {"mes": "2026-01", "category_macro": "Aereas", "card_class": "Infinite", "channel": "APP", "total_itens": 152, "usuarios_unicos": 143, "total_pontos": 6768700.0, "total_valor_reais": 101760.45, "total_coparticipacao_reais": 538.13, "custo_liquido_programa_reais": 101222.32, "custo_ponto_reais": 0.01495}, {"mes": "2026-01", "category_macro": "Aereas", "card_class": "Infinite", "channel": "WEB", "total_itens": 100, "usuarios_unicos": 95, "total_pontos": 4202100.0, "total_valor_reais": 63042.71, "total_coparticipacao_reais": 399.98, "custo_liquido_programa_reais": 62642.73, "custo_ponto_reais": 0.01491}, {"mes": "2026-01", "category_macro": "Aereas", "card_class": "Platinum", "channel": "APP", "total_itens": 205, "usuarios_unicos": 195, "total_pontos": 8759300.0, "total_valor_reais": 132365.3399999999, "total_coparticipacao_reais": 1387.21, "custo_liquido_programa_reais": 130978.13, "custo_ponto_reais": 0.01495}, {"mes": "2026-01", "category_macro": "Aereas", "card_class": "Platinum", "channel": "WEB", "total_itens": 129, "usuarios_unicos": 127, "total_pontos": 5648800.0, "total_valor_reais": 85616.99, "total_coparticipacao_reais": 725.7, "custo_liquido_programa_reais": 84891.29, "custo_ponto_reais": 0.01503}, {"mes": "2026-01", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 98, "usuarios_unicos": 97, "total_pontos": 4292100.0, "total_valor_reais": 64194.72, "total_coparticipacao_reais": 267.15, "custo_liquido_programa_reais": 63927.57, "custo_ponto_reais": 0.01489}, {"mes": "2026-01", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 68, "usuarios_unicos": 65, "total_pontos": 2776600.0, "total_valor_reais": 41883.9, "total_coparticipacao_reais": 392.79, "custo_liquido_programa_reais": 41491.11, "custo_ponto_reais": 0.01494}, {"mes": "2026-01", "category_macro": "Varejo", "card_class": "Black", "channel": "APP", "total_itens": 32, "usuarios_unicos": 31, "total_pontos": 186788.0, "total_valor_reais": 3302.73, "total_coparticipacao_reais": 747.4, "custo_liquido_programa_reais": 2555.33, "custo_ponto_reais": 0.01368}, {"mes": "2026-01", "category_macro": "Varejo", "card_class": "Black", "channel": "WEB", "total_itens": 20, "usuarios_unicos": 19, "total_pontos": 132271.0, "total_valor_reais": 2388.11, "total_coparticipacao_reais": 572.65, "custo_liquido_programa_reais": 1815.46, "custo_ponto_reais": 0.01373}, {"mes": "2026-01", "category_macro": "Varejo", "card_class": "Essencial", "channel": "APP", "total_itens": 77, "usuarios_unicos": 67, "total_pontos": 450996.0, "total_valor_reais": 7315.46, "total_coparticipacao_reais": 1222.9, "custo_liquido_programa_reais": 6092.56, "custo_ponto_reais": 0.01351}, {"mes": "2026-01", "category_macro": "Varejo", "card_class": "Essencial", "channel": "WEB", "total_itens": 45, "usuarios_unicos": 45, "total_pontos": 252070.0, "total_valor_reais": 4163.32, "total_coparticipacao_reais": 724.23, "custo_liquido_programa_reais": 3439.09, "custo_ponto_reais": 0.01364}, {"mes": "2026-01", "category_macro": "Varejo", "card_class": "Gold", "channel": "APP", "total_itens": 65, "usuarios_unicos": 58, "total_pontos": 520609.0, "total_valor_reais": 9284.69, "total_coparticipacao_reais": 2152.37, "custo_liquido_programa_reais": 7132.32, "custo_ponto_reais": 0.0137}, {"mes": "2026-01", "category_macro": "Varejo", "card_class": "Gold", "channel": "WEB", "total_itens": 36, "usuarios_unicos": 35, "total_pontos": 227319.0, "total_valor_reais": 4448.76, "total_coparticipacao_reais": 1332.0, "custo_liquido_programa_reais": 3116.76, "custo_ponto_reais": 0.01371}, {"mes": "2026-01", "category_macro": "Varejo", "card_class": "Infinite", "channel": "APP", "total_itens": 43, "usuarios_unicos": 41, "total_pontos": 254192.0, "total_valor_reais": 3776.95, "total_coparticipacao_reais": 355.53, "custo_liquido_programa_reais": 3421.42, "custo_ponto_reais": 0.01346}, {"mes": "2026-01", "category_macro": "Varejo", "card_class": "Infinite", "channel": "WEB", "total_itens": 19, "usuarios_unicos": 19, "total_pontos": 139339.0, "total_valor_reais": 2568.61, "total_coparticipacao_reais": 674.07, "custo_liquido_programa_reais": 1894.54, "custo_ponto_reais": 0.0136}, {"mes": "2026-01", "category_macro": "Varejo", "card_class": "Platinum", "channel": "APP", "total_itens": 44, "usuarios_unicos": 36, "total_pontos": 231143.0, "total_valor_reais": 4258.44, "total_coparticipacao_reais": 1153.92, "custo_liquido_programa_reais": 3104.52, "custo_ponto_reais": 0.01343}, {"mes": "2026-01", "category_macro": "Varejo", "card_class": "Platinum", "channel": "WEB", "total_itens": 31, "usuarios_unicos": 31, "total_pontos": 180995.0, "total_valor_reais": 3201.89, "total_coparticipacao_reais": 776.36, "custo_liquido_programa_reais": 2425.53, "custo_ponto_reais": 0.0134}, {"mes": "2026-01", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 38, "usuarios_unicos": 32, "total_pontos": 181611.0, "total_valor_reais": 2990.6, "total_coparticipacao_reais": 564.47, "custo_liquido_programa_reais": 2426.13, "custo_ponto_reais": 0.01336}, {"mes": "2026-01", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 17, "usuarios_unicos": 15, "total_pontos": 123537.0, "total_valor_reais": 2338.23, "total_coparticipacao_reais": 652.69, "custo_liquido_programa_reais": 1685.54, "custo_ponto_reais": 0.01364}, {"mes": "2026-02", "category_macro": "Aereas", "card_class": "Black", "channel": "APP", "total_itens": 42, "usuarios_unicos": 34, "total_pontos": 1123000.0, "total_valor_reais": 19125.0, "total_coparticipacao_reais": 2204.24, "custo_liquido_programa_reais": 16920.76, "custo_ponto_reais": 0.01507}, {"mes": "2026-02", "category_macro": "Aereas", "card_class": "Black", "channel": "WEB", "total_itens": 17, "usuarios_unicos": 17, "total_pontos": 523800.0, "total_valor_reais": 8327.33, "total_coparticipacao_reais": 381.9, "custo_liquido_programa_reais": 7945.43, "custo_ponto_reais": 0.01517}, {"mes": "2026-02", "category_macro": "Aereas", "card_class": "Essencial", "channel": "APP", "total_itens": 94, "usuarios_unicos": 78, "total_pontos": 2099400.0, "total_valor_reais": 36896.99, "total_coparticipacao_reais": 5381.52, "custo_liquido_programa_reais": 31515.47, "custo_ponto_reais": 0.01501}, {"mes": "2026-02", "category_macro": "Aereas", "card_class": "Essencial", "channel": "WEB", "total_itens": 44, "usuarios_unicos": 41, "total_pontos": 784400.0, "total_valor_reais": 12401.02, "total_coparticipacao_reais": 696.91, "custo_liquido_programa_reais": 11704.11, "custo_ponto_reais": 0.01492}, {"mes": "2026-02", "category_macro": "Aereas", "card_class": "Gold", "channel": "APP", "total_itens": 69, "usuarios_unicos": 64, "total_pontos": 1483200.0, "total_valor_reais": 26733.37, "total_coparticipacao_reais": 4353.71, "custo_liquido_programa_reais": 22379.66, "custo_ponto_reais": 0.01509}, {"mes": "2026-02", "category_macro": "Aereas", "card_class": "Gold", "channel": "WEB", "total_itens": 46, "usuarios_unicos": 44, "total_pontos": 832200.0, "total_valor_reais": 14788.86, "total_coparticipacao_reais": 2292.09, "custo_liquido_programa_reais": 12496.77, "custo_ponto_reais": 0.01502}, {"mes": "2026-02", "category_macro": "Aereas", "card_class": "Infinite", "channel": "APP", "total_itens": 46, "usuarios_unicos": 42, "total_pontos": 1497400.0, "total_valor_reais": 24082.61, "total_coparticipacao_reais": 1470.84, "custo_liquido_programa_reais": 22611.77, "custo_ponto_reais": 0.0151}, {"mes": "2026-02", "category_macro": "Aereas", "card_class": "Infinite", "channel": "WEB", "total_itens": 28, "usuarios_unicos": 25, "total_pontos": 941000.0, "total_valor_reais": 15445.82, "total_coparticipacao_reais": 1410.27, "custo_liquido_programa_reais": 14035.55, "custo_ponto_reais": 0.01492}, {"mes": "2026-02", "category_macro": "Aereas", "card_class": "Platinum", "channel": "APP", "total_itens": 61, "usuarios_unicos": 53, "total_pontos": 1559000.0, "total_valor_reais": 28205.5, "total_coparticipacao_reais": 4683.9, "custo_liquido_programa_reais": 23521.6, "custo_ponto_reais": 0.01509}, {"mes": "2026-02", "category_macro": "Aereas", "card_class": "Platinum", "channel": "WEB", "total_itens": 23, "usuarios_unicos": 21, "total_pontos": 531200.0, "total_valor_reais": 9889.88, "total_coparticipacao_reais": 2010.67, "custo_liquido_programa_reais": 7879.21, "custo_ponto_reais": 0.01483}, {"mes": "2026-02", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 30, "usuarios_unicos": 26, "total_pontos": 650900.0, "total_valor_reais": 11444.23, "total_coparticipacao_reais": 1667.75, "custo_liquido_programa_reais": 9776.48, "custo_ponto_reais": 0.01502}, {"mes": "2026-02", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 25, "usuarios_unicos": 23, "total_pontos": 634500.0, "total_valor_reais": 11572.66, "total_coparticipacao_reais": 2047.84, "custo_liquido_programa_reais": 9524.82, "custo_ponto_reais": 0.01501}, {"mes": "2026-02", "category_macro": "Varejo", "card_class": "Black", "channel": "APP", "total_itens": 47, "usuarios_unicos": 41, "total_pontos": 347902.0, "total_valor_reais": 6679.49, "total_coparticipacao_reais": 1914.5, "custo_liquido_programa_reais": 4764.99, "custo_ponto_reais": 0.0137}, {"mes": "2026-02", "category_macro": "Varejo", "card_class": "Black", "channel": "WEB", "total_itens": 28, "usuarios_unicos": 25, "total_pontos": 188502.0, "total_valor_reais": 3530.64, "total_coparticipacao_reais": 960.73, "custo_liquido_programa_reais": 2569.91, "custo_ponto_reais": 0.01363}, {"mes": "2026-02", "category_macro": "Varejo", "card_class": "Essencial", "channel": "APP", "total_itens": 71, "usuarios_unicos": 66, "total_pontos": 439313.0, "total_valor_reais": 7583.52, "total_coparticipacao_reais": 1625.75, "custo_liquido_programa_reais": 5957.77, "custo_ponto_reais": 0.01356}, {"mes": "2026-02", "category_macro": "Varejo", "card_class": "Essencial", "channel": "WEB", "total_itens": 48, "usuarios_unicos": 47, "total_pontos": 325989.0, "total_valor_reais": 5767.52, "total_coparticipacao_reais": 1353.59, "custo_liquido_programa_reais": 4413.93, "custo_ponto_reais": 0.01354}, {"mes": "2026-02", "category_macro": "Varejo", "card_class": "Gold", "channel": "APP", "total_itens": 65, "usuarios_unicos": 57, "total_pontos": 426800.0, "total_valor_reais": 7704.65, "total_coparticipacao_reais": 1914.66, "custo_liquido_programa_reais": 5789.99, "custo_ponto_reais": 0.01357}, {"mes": "2026-02", "category_macro": "Varejo", "card_class": "Gold", "channel": "WEB", "total_itens": 40, "usuarios_unicos": 35, "total_pontos": 273264.0, "total_valor_reais": 5319.66, "total_coparticipacao_reais": 1607.84, "custo_liquido_programa_reais": 3711.82, "custo_ponto_reais": 0.01358}, {"mes": "2026-02", "category_macro": "Varejo", "card_class": "Infinite", "channel": "APP", "total_itens": 61, "usuarios_unicos": 56, "total_pontos": 312541.0, "total_valor_reais": 5775.46, "total_coparticipacao_reais": 1528.62, "custo_liquido_programa_reais": 4246.84, "custo_ponto_reais": 0.01359}, {"mes": "2026-02", "category_macro": "Varejo", "card_class": "Infinite", "channel": "WEB", "total_itens": 16, "usuarios_unicos": 15, "total_pontos": 100185.0, "total_valor_reais": 1973.47, "total_coparticipacao_reais": 611.97, "custo_liquido_programa_reais": 1361.5, "custo_ponto_reais": 0.01359}, {"mes": "2026-02", "category_macro": "Varejo", "card_class": "Platinum", "channel": "APP", "total_itens": 47, "usuarios_unicos": 44, "total_pontos": 321155.0, "total_valor_reais": 6336.08, "total_coparticipacao_reais": 1945.26, "custo_liquido_programa_reais": 4390.82, "custo_ponto_reais": 0.01367}, {"mes": "2026-02", "category_macro": "Varejo", "card_class": "Platinum", "channel": "WEB", "total_itens": 25, "usuarios_unicos": 23, "total_pontos": 135988.0, "total_valor_reais": 2671.78, "total_coparticipacao_reais": 856.44, "custo_liquido_programa_reais": 1815.34, "custo_ponto_reais": 0.01335}, {"mes": "2026-02", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 37, "usuarios_unicos": 32, "total_pontos": 227158.0, "total_valor_reais": 4417.73, "total_coparticipacao_reais": 1299.34, "custo_liquido_programa_reais": 3118.39, "custo_ponto_reais": 0.01373}, {"mes": "2026-02", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 17, "usuarios_unicos": 17, "total_pontos": 98488.0, "total_valor_reais": 1333.13, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 1333.13, "custo_ponto_reais": 0.01354}, {"mes": "2026-03", "category_macro": "Aereas", "card_class": "Black", "channel": "APP", "total_itens": 43, "usuarios_unicos": 37, "total_pontos": 1344700.0, "total_valor_reais": 22413.17, "total_coparticipacao_reais": 2119.66, "custo_liquido_programa_reais": 20293.51, "custo_ponto_reais": 0.01509}, {"mes": "2026-03", "category_macro": "Aereas", "card_class": "Black", "channel": "WEB", "total_itens": 38, "usuarios_unicos": 34, "total_pontos": 1043300.0, "total_valor_reais": 15684.08, "total_coparticipacao_reais": 82.35, "custo_liquido_programa_reais": 15601.73, "custo_ponto_reais": 0.01495}, {"mes": "2026-03", "category_macro": "Aereas", "card_class": "Essencial", "channel": "APP", "total_itens": 109, "usuarios_unicos": 97, "total_pontos": 2106600.0, "total_valor_reais": 34797.53, "total_coparticipacao_reais": 3078.76, "custo_liquido_programa_reais": 31718.77, "custo_ponto_reais": 0.01506}, {"mes": "2026-03", "category_macro": "Aereas", "card_class": "Essencial", "channel": "WEB", "total_itens": 50, "usuarios_unicos": 48, "total_pontos": 941000.0, "total_valor_reais": 14805.73, "total_coparticipacao_reais": 759.34, "custo_liquido_programa_reais": 14046.39, "custo_ponto_reais": 0.01493}, {"mes": "2026-03", "category_macro": "Aereas", "card_class": "Gold", "channel": "APP", "total_itens": 76, "usuarios_unicos": 66, "total_pontos": 1502100.0, "total_valor_reais": 26264.08, "total_coparticipacao_reais": 3732.34, "custo_liquido_programa_reais": 22531.74, "custo_ponto_reais": 0.015}, {"mes": "2026-03", "category_macro": "Aereas", "card_class": "Gold", "channel": "WEB", "total_itens": 42, "usuarios_unicos": 37, "total_pontos": 884900.0, "total_valor_reais": 17632.59, "total_coparticipacao_reais": 4427.18, "custo_liquido_programa_reais": 13205.41, "custo_ponto_reais": 0.01492}, {"mes": "2026-03", "category_macro": "Aereas", "card_class": "Infinite", "channel": "APP", "total_itens": 55, "usuarios_unicos": 49, "total_pontos": 1928800.0, "total_valor_reais": 31423.51, "total_coparticipacao_reais": 2537.99, "custo_liquido_programa_reais": 28885.52, "custo_ponto_reais": 0.01498}, {"mes": "2026-03", "category_macro": "Aereas", "card_class": "Infinite", "channel": "WEB", "total_itens": 33, "usuarios_unicos": 32, "total_pontos": 1005400.0, "total_valor_reais": 15205.68, "total_coparticipacao_reais": 189.13, "custo_liquido_programa_reais": 15016.55, "custo_ponto_reais": 0.01494}, {"mes": "2026-03", "category_macro": "Aereas", "card_class": "Platinum", "channel": "APP", "total_itens": 66, "usuarios_unicos": 53, "total_pontos": 1712200.0, "total_valor_reais": 28496.97, "total_coparticipacao_reais": 2888.98, "custo_liquido_programa_reais": 25607.99, "custo_ponto_reais": 0.01496}, {"mes": "2026-03", "category_macro": "Aereas", "card_class": "Platinum", "channel": "WEB", "total_itens": 49, "usuarios_unicos": 46, "total_pontos": 1095000.0, "total_valor_reais": 18172.1, "total_coparticipacao_reais": 1787.58, "custo_liquido_programa_reais": 16384.52, "custo_ponto_reais": 0.01496}, {"mes": "2026-03", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 35, "usuarios_unicos": 33, "total_pontos": 802100.0, "total_valor_reais": 13518.75, "total_coparticipacao_reais": 1520.58, "custo_liquido_programa_reais": 11998.17, "custo_ponto_reais": 0.01496}, {"mes": "2026-03", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 24, "usuarios_unicos": 24, "total_pontos": 639700.0, "total_valor_reais": 9878.59, "total_coparticipacao_reais": 270.28, "custo_liquido_programa_reais": 9608.31, "custo_ponto_reais": 0.01502}, {"mes": "2026-03", "category_macro": "Varejo", "card_class": "Black", "channel": "APP", "total_itens": 53, "usuarios_unicos": 45, "total_pontos": 352154.0, "total_valor_reais": 6127.87, "total_coparticipacao_reais": 1288.9, "custo_liquido_programa_reais": 4838.97, "custo_ponto_reais": 0.01374}, {"mes": "2026-03", "category_macro": "Varejo", "card_class": "Black", "channel": "WEB", "total_itens": 32, "usuarios_unicos": 29, "total_pontos": 177256.0, "total_valor_reais": 3204.93, "total_coparticipacao_reais": 817.64, "custo_liquido_programa_reais": 2387.29, "custo_ponto_reais": 0.01347}, {"mes": "2026-03", "category_macro": "Varejo", "card_class": "Essencial", "channel": "APP", "total_itens": 112, "usuarios_unicos": 99, "total_pontos": 700791.0, "total_valor_reais": 11716.87, "total_coparticipacao_reais": 2265.52, "custo_liquido_programa_reais": 9451.35, "custo_ponto_reais": 0.01349}, {"mes": "2026-03", "category_macro": "Varejo", "card_class": "Essencial", "channel": "WEB", "total_itens": 42, "usuarios_unicos": 39, "total_pontos": 295254.0, "total_valor_reais": 5323.09, "total_coparticipacao_reais": 1324.77, "custo_liquido_programa_reais": 3998.32, "custo_ponto_reais": 0.01354}, {"mes": "2026-03", "category_macro": "Varejo", "card_class": "Gold", "channel": "APP", "total_itens": 70, "usuarios_unicos": 62, "total_pontos": 462970.0, "total_valor_reais": 8347.43, "total_coparticipacao_reais": 2072.29, "custo_liquido_programa_reais": 6275.14, "custo_ponto_reais": 0.01355}, {"mes": "2026-03", "category_macro": "Varejo", "card_class": "Gold", "channel": "WEB", "total_itens": 59, "usuarios_unicos": 55, "total_pontos": 347871.0, "total_valor_reais": 6507.43, "total_coparticipacao_reais": 1798.85, "custo_liquido_programa_reais": 4708.58, "custo_ponto_reais": 0.01354}, {"mes": "2026-03", "category_macro": "Varejo", "card_class": "Infinite", "channel": "APP", "total_itens": 56, "usuarios_unicos": 49, "total_pontos": 329525.0, "total_valor_reais": 6068.93, "total_coparticipacao_reais": 1612.84, "custo_liquido_programa_reais": 4456.09, "custo_ponto_reais": 0.01352}, {"mes": "2026-03", "category_macro": "Varejo", "card_class": "Infinite", "channel": "WEB", "total_itens": 39, "usuarios_unicos": 36, "total_pontos": 235838.0, "total_valor_reais": 4476.33, "total_coparticipacao_reais": 1250.93, "custo_liquido_programa_reais": 3225.4, "custo_ponto_reais": 0.01368}, {"mes": "2026-03", "category_macro": "Varejo", "card_class": "Platinum", "channel": "APP", "total_itens": 86, "usuarios_unicos": 74, "total_pontos": 551115.0, "total_valor_reais": 9656.68, "total_coparticipacao_reais": 2162.78, "custo_liquido_programa_reais": 7493.9, "custo_ponto_reais": 0.0136}, {"mes": "2026-03", "category_macro": "Varejo", "card_class": "Platinum", "channel": "WEB", "total_itens": 36, "usuarios_unicos": 34, "total_pontos": 248299.0, "total_valor_reais": 4145.81, "total_coparticipacao_reais": 773.42, "custo_liquido_programa_reais": 3372.39, "custo_ponto_reais": 0.01358}, {"mes": "2026-03", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 39, "usuarios_unicos": 34, "total_pontos": 231616.0, "total_valor_reais": 3910.64, "total_coparticipacao_reais": 777.42, "custo_liquido_programa_reais": 3133.22, "custo_ponto_reais": 0.01353}, {"mes": "2026-03", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 20, "usuarios_unicos": 18, "total_pontos": 139390.0, "total_valor_reais": 2151.01, "total_coparticipacao_reais": 269.64, "custo_liquido_programa_reais": 1881.37, "custo_ponto_reais": 0.0135}, {"mes": "2026-04", "category_macro": "Aereas", "card_class": "Black", "channel": "APP", "total_itens": 41, "usuarios_unicos": 37, "total_pontos": 1247800.0, "total_valor_reais": 20536.8, "total_coparticipacao_reais": 1787.22, "custo_liquido_programa_reais": 18749.58, "custo_ponto_reais": 0.01503}, {"mes": "2026-04", "category_macro": "Aereas", "card_class": "Black", "channel": "WEB", "total_itens": 24, "usuarios_unicos": 24, "total_pontos": 610600.0, "total_valor_reais": 11701.17, "total_coparticipacao_reais": 2696.83, "custo_liquido_programa_reais": 9004.34, "custo_ponto_reais": 0.01475}, {"mes": "2026-04", "category_macro": "Aereas", "card_class": "Essencial", "channel": "APP", "total_itens": 102, "usuarios_unicos": 88, "total_pontos": 2354200.0, "total_valor_reais": 39774.67, "total_coparticipacao_reais": 4439.01, "custo_liquido_programa_reais": 35335.66, "custo_ponto_reais": 0.01501}, {"mes": "2026-04", "category_macro": "Aereas", "card_class": "Essencial", "channel": "WEB", "total_itens": 52, "usuarios_unicos": 49, "total_pontos": 1001500.0, "total_valor_reais": 16962.58, "total_coparticipacao_reais": 1876.96, "custo_liquido_programa_reais": 15085.62, "custo_ponto_reais": 0.01506}, {"mes": "2026-04", "category_macro": "Aereas", "card_class": "Gold", "channel": "APP", "total_itens": 88, "usuarios_unicos": 75, "total_pontos": 2046000.0, "total_valor_reais": 34829.71, "total_coparticipacao_reais": 4408.72, "custo_liquido_programa_reais": 30420.99, "custo_ponto_reais": 0.01487}, {"mes": "2026-04", "category_macro": "Aereas", "card_class": "Gold", "channel": "WEB", "total_itens": 52, "usuarios_unicos": 49, "total_pontos": 940400.0, "total_valor_reais": 15167.11, "total_coparticipacao_reais": 1017.7, "custo_liquido_programa_reais": 14149.41, "custo_ponto_reais": 0.01505}, {"mes": "2026-04", "category_macro": "Aereas", "card_class": "Infinite", "channel": "APP", "total_itens": 62, "usuarios_unicos": 55, "total_pontos": 1859400.0, "total_valor_reais": 32390.17, "total_coparticipacao_reais": 4591.33, "custo_liquido_programa_reais": 27798.84, "custo_ponto_reais": 0.01495}, {"mes": "2026-04", "category_macro": "Aereas", "card_class": "Infinite", "channel": "WEB", "total_itens": 47, "usuarios_unicos": 43, "total_pontos": 1569600.0, "total_valor_reais": 24346.35, "total_coparticipacao_reais": 750.41, "custo_liquido_programa_reais": 23595.94, "custo_ponto_reais": 0.01503}, {"mes": "2026-04", "category_macro": "Aereas", "card_class": "Platinum", "channel": "APP", "total_itens": 60, "usuarios_unicos": 56, "total_pontos": 1278400.0, "total_valor_reais": 22927.41, "total_coparticipacao_reais": 3921.87, "custo_liquido_programa_reais": 19005.54, "custo_ponto_reais": 0.01487}, {"mes": "2026-04", "category_macro": "Aereas", "card_class": "Platinum", "channel": "WEB", "total_itens": 34, "usuarios_unicos": 33, "total_pontos": 773200.0, "total_valor_reais": 13824.84, "total_coparticipacao_reais": 2261.13, "custo_liquido_programa_reais": 11563.71, "custo_ponto_reais": 0.01496}, {"mes": "2026-04", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 40, "usuarios_unicos": 34, "total_pontos": 1005600.0, "total_valor_reais": 18921.89, "total_coparticipacao_reais": 3775.09, "custo_liquido_programa_reais": 15146.8, "custo_ponto_reais": 0.01506}, {"mes": "2026-04", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 25, "usuarios_unicos": 24, "total_pontos": 525800.0, "total_valor_reais": 8833.06, "total_coparticipacao_reais": 929.95, "custo_liquido_programa_reais": 7903.11, "custo_ponto_reais": 0.01503}, {"mes": "2026-04", "category_macro": "Varejo", "card_class": "Black", "channel": "APP", "total_itens": 52, "usuarios_unicos": 43, "total_pontos": 353481.0, "total_valor_reais": 7370.28, "total_coparticipacao_reais": 2558.13, "custo_liquido_programa_reais": 4812.15, "custo_ponto_reais": 0.01361}, {"mes": "2026-04", "category_macro": "Varejo", "card_class": "Black", "channel": "WEB", "total_itens": 24, "usuarios_unicos": 22, "total_pontos": 125034.0, "total_valor_reais": 2018.39, "total_coparticipacao_reais": 317.23, "custo_liquido_programa_reais": 1701.16, "custo_ponto_reais": 0.01361}, {"mes": "2026-04", "category_macro": "Varejo", "card_class": "Essencial", "channel": "APP", "total_itens": 80, "usuarios_unicos": 73, "total_pontos": 457355.0, "total_valor_reais": 9233.51, "total_coparticipacao_reais": 3014.31, "custo_liquido_programa_reais": 6219.2, "custo_ponto_reais": 0.0136}, {"mes": "2026-04", "category_macro": "Varejo", "card_class": "Essencial", "channel": "WEB", "total_itens": 61, "usuarios_unicos": 51, "total_pontos": 378570.0, "total_valor_reais": 7208.19, "total_coparticipacao_reais": 2055.27, "custo_liquido_programa_reais": 5152.92, "custo_ponto_reais": 0.01361}, {"mes": "2026-04", "category_macro": "Varejo", "card_class": "Gold", "channel": "APP", "total_itens": 87, "usuarios_unicos": 76, "total_pontos": 467184.0, "total_valor_reais": 9989.61, "total_coparticipacao_reais": 3689.08, "custo_liquido_programa_reais": 6300.53, "custo_ponto_reais": 0.01349}, {"mes": "2026-04", "category_macro": "Varejo", "card_class": "Gold", "channel": "WEB", "total_itens": 45, "usuarios_unicos": 39, "total_pontos": 248795.0, "total_valor_reais": 4533.36, "total_coparticipacao_reais": 1175.62, "custo_liquido_programa_reais": 3357.74, "custo_ponto_reais": 0.0135}, {"mes": "2026-04", "category_macro": "Varejo", "card_class": "Infinite", "channel": "APP", "total_itens": 48, "usuarios_unicos": 42, "total_pontos": 353602.0, "total_valor_reais": 5854.43, "total_coparticipacao_reais": 1057.66, "custo_liquido_programa_reais": 4796.77, "custo_ponto_reais": 0.01357}, {"mes": "2026-04", "category_macro": "Varejo", "card_class": "Infinite", "channel": "WEB", "total_itens": 20, "usuarios_unicos": 20, "total_pontos": 151838.0, "total_valor_reais": 2198.01, "total_coparticipacao_reais": 147.22, "custo_liquido_programa_reais": 2050.79, "custo_ponto_reais": 0.01351}, {"mes": "2026-04", "category_macro": "Varejo", "card_class": "Platinum", "channel": "APP", "total_itens": 62, "usuarios_unicos": 54, "total_pontos": 343170.0, "total_valor_reais": 6062.25, "total_coparticipacao_reais": 1424.05, "custo_liquido_programa_reais": 4638.2, "custo_ponto_reais": 0.01352}, {"mes": "2026-04", "category_macro": "Varejo", "card_class": "Platinum", "channel": "WEB", "total_itens": 46, "usuarios_unicos": 44, "total_pontos": 281442.0, "total_valor_reais": 5441.19, "total_coparticipacao_reais": 1575.21, "custo_liquido_programa_reais": 3865.98, "custo_ponto_reais": 0.01374}, {"mes": "2026-04", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 34, "usuarios_unicos": 29, "total_pontos": 290841.0, "total_valor_reais": 4808.46, "total_coparticipacao_reais": 842.78, "custo_liquido_programa_reais": 3965.68, "custo_ponto_reais": 0.01364}, {"mes": "2026-04", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 21, "usuarios_unicos": 21, "total_pontos": 179664.0, "total_valor_reais": 2956.63, "total_coparticipacao_reais": 546.67, "custo_liquido_programa_reais": 2409.96, "custo_ponto_reais": 0.01341}, {"mes": "2026-05", "category_macro": "Aereas", "card_class": "Black", "channel": "APP", "total_itens": 59, "usuarios_unicos": 50, "total_pontos": 1701000.0, "total_valor_reais": 27565.32, "total_coparticipacao_reais": 2271.91, "custo_liquido_programa_reais": 25293.41, "custo_ponto_reais": 0.01487}, {"mes": "2026-05", "category_macro": "Aereas", "card_class": "Black", "channel": "WEB", "total_itens": 26, "usuarios_unicos": 23, "total_pontos": 680800.0, "total_valor_reais": 10195.33, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 10195.33, "custo_ponto_reais": 0.01498}, {"mes": "2026-05", "category_macro": "Aereas", "card_class": "Essencial", "channel": "APP", "total_itens": 96, "usuarios_unicos": 84, "total_pontos": 1993400.0, "total_valor_reais": 33127.15, "total_coparticipacao_reais": 3196.35, "custo_liquido_programa_reais": 29930.8, "custo_ponto_reais": 0.01501}, {"mes": "2026-05", "category_macro": "Aereas", "card_class": "Essencial", "channel": "WEB", "total_itens": 65, "usuarios_unicos": 61, "total_pontos": 1313100.0, "total_valor_reais": 21875.95, "total_coparticipacao_reais": 2155.44, "custo_liquido_programa_reais": 19720.51, "custo_ponto_reais": 0.01502}, {"mes": "2026-05", "category_macro": "Aereas", "card_class": "Gold", "channel": "APP", "total_itens": 89, "usuarios_unicos": 80, "total_pontos": 1890200.0, "total_valor_reais": 34187.11, "total_coparticipacao_reais": 5902.98, "custo_liquido_programa_reais": 28284.13, "custo_ponto_reais": 0.01496}, {"mes": "2026-05", "category_macro": "Aereas", "card_class": "Gold", "channel": "WEB", "total_itens": 63, "usuarios_unicos": 58, "total_pontos": 1368200.0, "total_valor_reais": 24282.11, "total_coparticipacao_reais": 3726.46, "custo_liquido_programa_reais": 20555.65, "custo_ponto_reais": 0.01502}, {"mes": "2026-05", "category_macro": "Aereas", "card_class": "Infinite", "channel": "APP", "total_itens": 60, "usuarios_unicos": 55, "total_pontos": 1746700.0, "total_valor_reais": 29522.06, "total_coparticipacao_reais": 3303.22, "custo_liquido_programa_reais": 26218.84, "custo_ponto_reais": 0.01501}, {"mes": "2026-05", "category_macro": "Aereas", "card_class": "Infinite", "channel": "WEB", "total_itens": 52, "usuarios_unicos": 49, "total_pontos": 1361200.0, "total_valor_reais": 23583.85, "total_coparticipacao_reais": 3053.84, "custo_liquido_programa_reais": 20530.01, "custo_ponto_reais": 0.01508}, {"mes": "2026-05", "category_macro": "Aereas", "card_class": "Platinum", "channel": "APP", "total_itens": 66, "usuarios_unicos": 62, "total_pontos": 1597100.0, "total_valor_reais": 26982.39, "total_coparticipacao_reais": 2961.83, "custo_liquido_programa_reais": 24020.56, "custo_ponto_reais": 0.01504}, {"mes": "2026-05", "category_macro": "Aereas", "card_class": "Platinum", "channel": "WEB", "total_itens": 39, "usuarios_unicos": 36, "total_pontos": 892100.0, "total_valor_reais": 13729.78, "total_coparticipacao_reais": 351.0, "custo_liquido_programa_reais": 13378.78, "custo_ponto_reais": 0.015}, {"mes": "2026-05", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 44, "usuarios_unicos": 41, "total_pontos": 1098500.0, "total_valor_reais": 19614.75, "total_coparticipacao_reais": 3142.05, "custo_liquido_programa_reais": 16472.7, "custo_ponto_reais": 0.015}, {"mes": "2026-05", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 24, "usuarios_unicos": 24, "total_pontos": 469200.0, "total_valor_reais": 7612.69, "total_coparticipacao_reais": 633.72, "custo_liquido_programa_reais": 6978.97, "custo_ponto_reais": 0.01487}, {"mes": "2026-05", "category_macro": "Cashback", "card_class": "Essencial", "channel": "APP", "total_itens": 18, "usuarios_unicos": 18, "total_pontos": 190478.0, "total_valor_reais": 3619.08, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 3619.08, "custo_ponto_reais": 0.019}, {"mes": "2026-05", "category_macro": "Cashback", "card_class": "Essencial", "channel": "WEB", "total_itens": 9, "usuarios_unicos": 9, "total_pontos": 138191.0, "total_valor_reais": 2625.63, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 2625.63, "custo_ponto_reais": 0.019}, {"mes": "2026-05", "category_macro": "Cashback", "card_class": "Gold", "channel": "APP", "total_itens": 9, "usuarios_unicos": 9, "total_pontos": 61160.0, "total_valor_reais": 1162.03, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 1162.03, "custo_ponto_reais": 0.019}, {"mes": "2026-05", "category_macro": "Cashback", "card_class": "Gold", "channel": "WEB", "total_itens": 6, "usuarios_unicos": 6, "total_pontos": 61607.0, "total_valor_reais": 1170.54, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 1170.54, "custo_ponto_reais": 0.019}, {"mes": "2026-05", "category_macro": "Cashback", "card_class": "Infinite", "channel": "APP", "total_itens": 4, "usuarios_unicos": 4, "total_pontos": 63521.0, "total_valor_reais": 1206.91, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 1206.91, "custo_ponto_reais": 0.019}, {"mes": "2026-05", "category_macro": "Cashback", "card_class": "Infinite", "channel": "WEB", "total_itens": 1, "usuarios_unicos": 1, "total_pontos": 19510.0, "total_valor_reais": 370.69, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 370.69, "custo_ponto_reais": 0.019}, {"mes": "2026-05", "category_macro": "Cashback", "card_class": "Platinum", "channel": "APP", "total_itens": 11, "usuarios_unicos": 11, "total_pontos": 206105.0, "total_valor_reais": 3916.01, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 3916.01, "custo_ponto_reais": 0.019}, {"mes": "2026-05", "category_macro": "Cashback", "card_class": "Platinum", "channel": "WEB", "total_itens": 8, "usuarios_unicos": 8, "total_pontos": 78996.0, "total_valor_reais": 1500.93, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 1500.93, "custo_ponto_reais": 0.019}, {"mes": "2026-05", "category_macro": "Cashback", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 3, "usuarios_unicos": 3, "total_pontos": 22982.0, "total_valor_reais": 436.66, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 436.66, "custo_ponto_reais": 0.019}, {"mes": "2026-05", "category_macro": "Cashback", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 6, "usuarios_unicos": 6, "total_pontos": 208545.0, "total_valor_reais": 3962.35, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 3962.35, "custo_ponto_reais": 0.019}, {"mes": "2026-05", "category_macro": "Varejo", "card_class": "Black", "channel": "APP", "total_itens": 46, "usuarios_unicos": 40, "total_pontos": 300737.0, "total_valor_reais": 5562.25, "total_coparticipacao_reais": 1482.1, "custo_liquido_programa_reais": 4080.15, "custo_ponto_reais": 0.01357}, {"mes": "2026-05", "category_macro": "Varejo", "card_class": "Black", "channel": "WEB", "total_itens": 34, "usuarios_unicos": 33, "total_pontos": 211456.0, "total_valor_reais": 4496.79, "total_coparticipacao_reais": 1618.6, "custo_liquido_programa_reais": 2878.19, "custo_ponto_reais": 0.01361}, {"mes": "2026-05", "category_macro": "Varejo", "card_class": "Essencial", "channel": "APP", "total_itens": 105, "usuarios_unicos": 95, "total_pontos": 586584.0, "total_valor_reais": 11843.87, "total_coparticipacao_reais": 3868.42, "custo_liquido_programa_reais": 7975.45, "custo_ponto_reais": 0.0136}, {"mes": "2026-05", "category_macro": "Varejo", "card_class": "Essencial", "channel": "WEB", "total_itens": 70, "usuarios_unicos": 65, "total_pontos": 436376.0, "total_valor_reais": 9278.5, "total_coparticipacao_reais": 3336.09, "custo_liquido_programa_reais": 5942.41, "custo_ponto_reais": 0.01362}, {"mes": "2026-05", "category_macro": "Varejo", "card_class": "Gold", "channel": "APP", "total_itens": 92, "usuarios_unicos": 83, "total_pontos": 529833.0, "total_valor_reais": 10343.88, "total_coparticipacao_reais": 3117.7, "custo_liquido_programa_reais": 7226.18, "custo_ponto_reais": 0.01364}, {"mes": "2026-05", "category_macro": "Varejo", "card_class": "Gold", "channel": "WEB", "total_itens": 47, "usuarios_unicos": 47, "total_pontos": 340175.0, "total_valor_reais": 5630.21, "total_coparticipacao_reais": 996.02, "custo_liquido_programa_reais": 4634.19, "custo_ponto_reais": 0.01362}, {"mes": "2026-05", "category_macro": "Varejo", "card_class": "Infinite", "channel": "APP", "total_itens": 63, "usuarios_unicos": 52, "total_pontos": 476460.0, "total_valor_reais": 7907.8, "total_coparticipacao_reais": 1408.63, "custo_liquido_programa_reais": 6499.17, "custo_ponto_reais": 0.01364}, {"mes": "2026-05", "category_macro": "Varejo", "card_class": "Infinite", "channel": "WEB", "total_itens": 44, "usuarios_unicos": 43, "total_pontos": 286820.0, "total_valor_reais": 4920.11, "total_coparticipacao_reais": 1033.97, "custo_liquido_programa_reais": 3886.14, "custo_ponto_reais": 0.01355}, {"mes": "2026-05", "category_macro": "Varejo", "card_class": "Platinum", "channel": "APP", "total_itens": 70, "usuarios_unicos": 65, "total_pontos": 438242.0, "total_valor_reais": 9250.81, "total_coparticipacao_reais": 3283.85, "custo_liquido_programa_reais": 5966.96, "custo_ponto_reais": 0.01362}, {"mes": "2026-05", "category_macro": "Varejo", "card_class": "Platinum", "channel": "WEB", "total_itens": 42, "usuarios_unicos": 37, "total_pontos": 328440.0, "total_valor_reais": 5884.27, "total_coparticipacao_reais": 1380.57, "custo_liquido_programa_reais": 4503.7, "custo_ponto_reais": 0.01371}, {"mes": "2026-05", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 49, "usuarios_unicos": 40, "total_pontos": 322663.0, "total_valor_reais": 6529.32, "total_coparticipacao_reais": 2131.11, "custo_liquido_programa_reais": 4398.21, "custo_ponto_reais": 0.01363}, {"mes": "2026-05", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 18, "usuarios_unicos": 17, "total_pontos": 108190.0, "total_valor_reais": 1587.4, "total_coparticipacao_reais": 111.15, "custo_liquido_programa_reais": 1476.25, "custo_ponto_reais": 0.01364}, {"mes": "2026-06", "category_macro": "Aereas", "card_class": "Black", "channel": "APP", "total_itens": 57, "usuarios_unicos": 50, "total_pontos": 1617500.0, "total_valor_reais": 26022.54, "total_coparticipacao_reais": 1725.0, "custo_liquido_programa_reais": 24297.54, "custo_ponto_reais": 0.01502}, {"mes": "2026-06", "category_macro": "Aereas", "card_class": "Black", "channel": "WEB", "total_itens": 23, "usuarios_unicos": 22, "total_pontos": 778600.0, "total_valor_reais": 12016.85, "total_coparticipacao_reais": 389.91, "custo_liquido_programa_reais": 11626.94, "custo_ponto_reais": 0.01493}, {"mes": "2026-06", "category_macro": "Aereas", "card_class": "Essencial", "channel": "APP", "total_itens": 110, "usuarios_unicos": 104, "total_pontos": 2204400.0, "total_valor_reais": 36514.27, "total_coparticipacao_reais": 3602.87, "custo_liquido_programa_reais": 32911.4, "custo_ponto_reais": 0.01493}, {"mes": "2026-06", "category_macro": "Aereas", "card_class": "Essencial", "channel": "WEB", "total_itens": 64, "usuarios_unicos": 61, "total_pontos": 1217500.0, "total_valor_reais": 20572.64, "total_coparticipacao_reais": 2337.84, "custo_liquido_programa_reais": 18234.8, "custo_ponto_reais": 0.01498}, {"mes": "2026-06", "category_macro": "Aereas", "card_class": "Gold", "channel": "APP", "total_itens": 95, "usuarios_unicos": 87, "total_pontos": 1990000.0, "total_valor_reais": 32696.96, "total_coparticipacao_reais": 2780.58, "custo_liquido_programa_reais": 29916.38, "custo_ponto_reais": 0.01503}, {"mes": "2026-06", "category_macro": "Aereas", "card_class": "Gold", "channel": "WEB", "total_itens": 63, "usuarios_unicos": 60, "total_pontos": 1355000.0, "total_valor_reais": 24926.25, "total_coparticipacao_reais": 4514.1, "custo_liquido_programa_reais": 20412.15, "custo_ponto_reais": 0.01506}, {"mes": "2026-06", "category_macro": "Aereas", "card_class": "Infinite", "channel": "APP", "total_itens": 93, "usuarios_unicos": 86, "total_pontos": 2628600.0, "total_valor_reais": 43106.62, "total_coparticipacao_reais": 3544.57, "custo_liquido_programa_reais": 39562.05, "custo_ponto_reais": 0.01505}, {"mes": "2026-06", "category_macro": "Aereas", "card_class": "Infinite", "channel": "WEB", "total_itens": 32, "usuarios_unicos": 29, "total_pontos": 939300.0, "total_valor_reais": 16972.53, "total_coparticipacao_reais": 2869.65, "custo_liquido_programa_reais": 14102.88, "custo_ponto_reais": 0.01501}, {"mes": "2026-06", "category_macro": "Aereas", "card_class": "Platinum", "channel": "APP", "total_itens": 82, "usuarios_unicos": 77, "total_pontos": 1898900.0, "total_valor_reais": 33033.53, "total_coparticipacao_reais": 4598.15, "custo_liquido_programa_reais": 28435.38, "custo_ponto_reais": 0.01497}, {"mes": "2026-06", "category_macro": "Aereas", "card_class": "Platinum", "channel": "WEB", "total_itens": 48, "usuarios_unicos": 48, "total_pontos": 1032500.0, "total_valor_reais": 17324.34, "total_coparticipacao_reais": 1724.25, "custo_liquido_programa_reais": 15600.09, "custo_ponto_reais": 0.01511}, {"mes": "2026-06", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 43, "usuarios_unicos": 39, "total_pontos": 855400.0, "total_valor_reais": 14197.03, "total_coparticipacao_reais": 1485.21, "custo_liquido_programa_reais": 12711.82, "custo_ponto_reais": 0.01486}, {"mes": "2026-06", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 21, "usuarios_unicos": 20, "total_pontos": 574200.0, "total_valor_reais": 9317.83, "total_coparticipacao_reais": 616.86, "custo_liquido_programa_reais": 8700.97, "custo_ponto_reais": 0.01515}, {"mes": "2026-06", "category_macro": "Cashback", "card_class": "Black", "channel": "APP", "total_itens": 21, "usuarios_unicos": 20, "total_pontos": 378868.0, "total_valor_reais": 7198.5, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 7198.5, "custo_ponto_reais": 0.019}, {"mes": "2026-06", "category_macro": "Cashback", "card_class": "Black", "channel": "WEB", "total_itens": 9, "usuarios_unicos": 9, "total_pontos": 212562.0, "total_valor_reais": 4038.68, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 4038.68, "custo_ponto_reais": 0.019}, {"mes": "2026-06", "category_macro": "Cashback", "card_class": "Essencial", "channel": "APP", "total_itens": 153, "usuarios_unicos": 140, "total_pontos": 1543108.0, "total_valor_reais": 29319.15, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 29319.15, "custo_ponto_reais": 0.019}, {"mes": "2026-06", "category_macro": "Cashback", "card_class": "Essencial", "channel": "WEB", "total_itens": 79, "usuarios_unicos": 71, "total_pontos": 928186.0, "total_valor_reais": 17635.58, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 17635.58, "custo_ponto_reais": 0.019}, {"mes": "2026-06", "category_macro": "Cashback", "card_class": "Gold", "channel": "APP", "total_itens": 130, "usuarios_unicos": 115, "total_pontos": 1250389.0, "total_valor_reais": 23757.45, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 23757.45, "custo_ponto_reais": 0.019}, {"mes": "2026-06", "category_macro": "Cashback", "card_class": "Gold", "channel": "WEB", "total_itens": 75, "usuarios_unicos": 72, "total_pontos": 895828.0, "total_valor_reais": 17020.81, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 17020.81, "custo_ponto_reais": 0.019}, {"mes": "2026-06", "category_macro": "Cashback", "card_class": "Infinite", "channel": "APP", "total_itens": 25, "usuarios_unicos": 24, "total_pontos": 779461.0, "total_valor_reais": 14809.77, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 14809.77, "custo_ponto_reais": 0.019}, {"mes": "2026-06", "category_macro": "Cashback", "card_class": "Infinite", "channel": "WEB", "total_itens": 17, "usuarios_unicos": 16, "total_pontos": 381432.0, "total_valor_reais": 7247.21, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 7247.21, "custo_ponto_reais": 0.019}, {"mes": "2026-06", "category_macro": "Cashback", "card_class": "Platinum", "channel": "APP", "total_itens": 75, "usuarios_unicos": 68, "total_pontos": 1091542.0, "total_valor_reais": 20739.34, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 20739.34, "custo_ponto_reais": 0.019}, {"mes": "2026-06", "category_macro": "Cashback", "card_class": "Platinum", "channel": "WEB", "total_itens": 40, "usuarios_unicos": 39, "total_pontos": 724907.0, "total_valor_reais": 13773.26, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 13773.26, "custo_ponto_reais": 0.019}, {"mes": "2026-06", "category_macro": "Cashback", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 54, "usuarios_unicos": 48, "total_pontos": 761840.0, "total_valor_reais": 14474.97, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 14474.97, "custo_ponto_reais": 0.019}, {"mes": "2026-06", "category_macro": "Cashback", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 26, "usuarios_unicos": 25, "total_pontos": 267012.0, "total_valor_reais": 5073.23, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 5073.23, "custo_ponto_reais": 0.019}, {"mes": "2026-06", "category_macro": "Varejo", "card_class": "Black", "channel": "APP", "total_itens": 39, "usuarios_unicos": 35, "total_pontos": 399701.0, "total_valor_reais": 6651.7, "total_coparticipacao_reais": 1111.53, "custo_liquido_programa_reais": 5540.17, "custo_ponto_reais": 0.01386}, {"mes": "2026-06", "category_macro": "Varejo", "card_class": "Black", "channel": "WEB", "total_itens": 25, "usuarios_unicos": 25, "total_pontos": 169768.0, "total_valor_reais": 3725.1, "total_coparticipacao_reais": 1396.69, "custo_liquido_programa_reais": 2328.41, "custo_ponto_reais": 0.01372}, {"mes": "2026-06", "category_macro": "Varejo", "card_class": "Essencial", "channel": "APP", "total_itens": 97, "usuarios_unicos": 90, "total_pontos": 591399.0, "total_valor_reais": 11109.81, "total_coparticipacao_reais": 2960.05, "custo_liquido_programa_reais": 8149.76, "custo_ponto_reais": 0.01378}, {"mes": "2026-06", "category_macro": "Varejo", "card_class": "Essencial", "channel": "WEB", "total_itens": 47, "usuarios_unicos": 46, "total_pontos": 333611.0, "total_valor_reais": 6382.36, "total_coparticipacao_reais": 1757.49, "custo_liquido_programa_reais": 4624.87, "custo_ponto_reais": 0.01386}, {"mes": "2026-06", "category_macro": "Varejo", "card_class": "Gold", "channel": "APP", "total_itens": 70, "usuarios_unicos": 64, "total_pontos": 445808.0, "total_valor_reais": 8980.78, "total_coparticipacao_reais": 2831.97, "custo_liquido_programa_reais": 6148.81, "custo_ponto_reais": 0.01379}, {"mes": "2026-06", "category_macro": "Varejo", "card_class": "Gold", "channel": "WEB", "total_itens": 39, "usuarios_unicos": 38, "total_pontos": 222937.0, "total_valor_reais": 4281.87, "total_coparticipacao_reais": 1237.94, "custo_liquido_programa_reais": 3043.93, "custo_ponto_reais": 0.01365}, {"mes": "2026-06", "category_macro": "Varejo", "card_class": "Infinite", "channel": "APP", "total_itens": 81, "usuarios_unicos": 72, "total_pontos": 582799.0, "total_valor_reais": 12222.59, "total_coparticipacao_reais": 4151.07, "custo_liquido_programa_reais": 8071.52, "custo_ponto_reais": 0.01385}, {"mes": "2026-06", "category_macro": "Varejo", "card_class": "Infinite", "channel": "WEB", "total_itens": 35, "usuarios_unicos": 34, "total_pontos": 241071.0, "total_valor_reais": 4778.78, "total_coparticipacao_reais": 1467.1, "custo_liquido_programa_reais": 3311.68, "custo_ponto_reais": 0.01374}, {"mes": "2026-06", "category_macro": "Varejo", "card_class": "Platinum", "channel": "APP", "total_itens": 67, "usuarios_unicos": 61, "total_pontos": 491771.0, "total_valor_reais": 9232.71, "total_coparticipacao_reais": 2453.21, "custo_liquido_programa_reais": 6779.5, "custo_ponto_reais": 0.01379}, {"mes": "2026-06", "category_macro": "Varejo", "card_class": "Platinum", "channel": "WEB", "total_itens": 35, "usuarios_unicos": 34, "total_pontos": 193306.0, "total_valor_reais": 4660.46, "total_coparticipacao_reais": 1993.68, "custo_liquido_programa_reais": 2666.78, "custo_ponto_reais": 0.0138}, {"mes": "2026-06", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 41, "usuarios_unicos": 37, "total_pontos": 259389.0, "total_valor_reais": 4144.5, "total_coparticipacao_reais": 583.38, "custo_liquido_programa_reais": 3561.12, "custo_ponto_reais": 0.01373}, {"mes": "2026-06", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 17, "usuarios_unicos": 16, "total_pontos": 112924.0, "total_valor_reais": 3946.56, "total_coparticipacao_reais": 2382.78, "custo_liquido_programa_reais": 1563.78, "custo_ponto_reais": 0.01385}, {"mes": "2026-07", "category_macro": "Aereas", "card_class": "Black", "channel": "APP", "total_itens": 69, "usuarios_unicos": 60, "total_pontos": 2149400.0, "total_valor_reais": 34801.83, "total_coparticipacao_reais": 2475.31, "custo_liquido_programa_reais": 32326.52, "custo_ponto_reais": 0.01504}, {"mes": "2026-07", "category_macro": "Aereas", "card_class": "Black", "channel": "WEB", "total_itens": 29, "usuarios_unicos": 28, "total_pontos": 927400.0, "total_valor_reais": 14866.46, "total_coparticipacao_reais": 926.08, "custo_liquido_programa_reais": 13940.38, "custo_ponto_reais": 0.01503}, {"mes": "2026-07", "category_macro": "Aereas", "card_class": "Essencial", "channel": "APP", "total_itens": 107, "usuarios_unicos": 98, "total_pontos": 2268200.0, "total_valor_reais": 37017.61, "total_coparticipacao_reais": 3248.36, "custo_liquido_programa_reais": 33769.25, "custo_ponto_reais": 0.01489}, {"mes": "2026-07", "category_macro": "Aereas", "card_class": "Essencial", "channel": "WEB", "total_itens": 62, "usuarios_unicos": 61, "total_pontos": 1253900.0, "total_valor_reais": 22609.44, "total_coparticipacao_reais": 3840.38, "custo_liquido_programa_reais": 18769.06, "custo_ponto_reais": 0.01497}, {"mes": "2026-07", "category_macro": "Aereas", "card_class": "Gold", "channel": "APP", "total_itens": 82, "usuarios_unicos": 78, "total_pontos": 1625900.0, "total_valor_reais": 28854.41, "total_coparticipacao_reais": 4357.39, "custo_liquido_programa_reais": 24497.02, "custo_ponto_reais": 0.01507}, {"mes": "2026-07", "category_macro": "Aereas", "card_class": "Gold", "channel": "WEB", "total_itens": 46, "usuarios_unicos": 45, "total_pontos": 824300.0, "total_valor_reais": 13881.54, "total_coparticipacao_reais": 1515.25, "custo_liquido_programa_reais": 12366.29, "custo_ponto_reais": 0.015}, {"mes": "2026-07", "category_macro": "Aereas", "card_class": "Infinite", "channel": "APP", "total_itens": 99, "usuarios_unicos": 87, "total_pontos": 3222500.0, "total_valor_reais": 49887.82, "total_coparticipacao_reais": 1521.46, "custo_liquido_programa_reais": 48366.36, "custo_ponto_reais": 0.01501}, {"mes": "2026-07", "category_macro": "Aereas", "card_class": "Infinite", "channel": "WEB", "total_itens": 37, "usuarios_unicos": 36, "total_pontos": 940400.0, "total_valor_reais": 15035.3, "total_coparticipacao_reais": 901.67, "custo_liquido_programa_reais": 14133.63, "custo_ponto_reais": 0.01503}, {"mes": "2026-07", "category_macro": "Aereas", "card_class": "Platinum", "channel": "APP", "total_itens": 82, "usuarios_unicos": 77, "total_pontos": 1778100.0, "total_valor_reais": 27975.93, "total_coparticipacao_reais": 1393.61, "custo_liquido_programa_reais": 26582.32, "custo_ponto_reais": 0.01495}, {"mes": "2026-07", "category_macro": "Aereas", "card_class": "Platinum", "channel": "WEB", "total_itens": 42, "usuarios_unicos": 41, "total_pontos": 852400.0, "total_valor_reais": 14663.74, "total_coparticipacao_reais": 1891.39, "custo_liquido_programa_reais": 12772.35, "custo_ponto_reais": 0.01498}, {"mes": "2026-07", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 44, "usuarios_unicos": 41, "total_pontos": 1163500.0, "total_valor_reais": 17752.74, "total_coparticipacao_reais": 312.37, "custo_liquido_programa_reais": 17440.37, "custo_ponto_reais": 0.01499}, {"mes": "2026-07", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 25, "usuarios_unicos": 23, "total_pontos": 681900.0, "total_valor_reais": 10778.37, "total_coparticipacao_reais": 637.99, "custo_liquido_programa_reais": 10140.38, "custo_ponto_reais": 0.01487}, {"mes": "2026-07", "category_macro": "Cashback", "card_class": "Black", "channel": "APP", "total_itens": 21, "usuarios_unicos": 21, "total_pontos": 588796.0, "total_valor_reais": 11187.13, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 11187.13, "custo_ponto_reais": 0.019}, {"mes": "2026-07", "category_macro": "Cashback", "card_class": "Black", "channel": "WEB", "total_itens": 10, "usuarios_unicos": 9, "total_pontos": 292538.0, "total_valor_reais": 5558.22, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 5558.22, "custo_ponto_reais": 0.019}, {"mes": "2026-07", "category_macro": "Cashback", "card_class": "Essencial", "channel": "APP", "total_itens": 151, "usuarios_unicos": 136, "total_pontos": 1579715.0, "total_valor_reais": 30014.71, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 30014.71, "custo_ponto_reais": 0.019}, {"mes": "2026-07", "category_macro": "Cashback", "card_class": "Essencial", "channel": "WEB", "total_itens": 71, "usuarios_unicos": 69, "total_pontos": 783309.0, "total_valor_reais": 14882.88, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 14882.88, "custo_ponto_reais": 0.019}, {"mes": "2026-07", "category_macro": "Cashback", "card_class": "Gold", "channel": "APP", "total_itens": 107, "usuarios_unicos": 99, "total_pontos": 981792.0, "total_valor_reais": 18654.07, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 18654.07, "custo_ponto_reais": 0.019}, {"mes": "2026-07", "category_macro": "Cashback", "card_class": "Gold", "channel": "WEB", "total_itens": 70, "usuarios_unicos": 65, "total_pontos": 759011.0, "total_valor_reais": 14421.24, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 14421.24, "custo_ponto_reais": 0.019}, {"mes": "2026-07", "category_macro": "Cashback", "card_class": "Infinite", "channel": "APP", "total_itens": 38, "usuarios_unicos": 36, "total_pontos": 889705.0, "total_valor_reais": 16904.45, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 16904.45, "custo_ponto_reais": 0.019}, {"mes": "2026-07", "category_macro": "Cashback", "card_class": "Infinite", "channel": "WEB", "total_itens": 19, "usuarios_unicos": 19, "total_pontos": 428736.0, "total_valor_reais": 8146.0, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 8146.0, "custo_ponto_reais": 0.019}, {"mes": "2026-07", "category_macro": "Cashback", "card_class": "Platinum", "channel": "APP", "total_itens": 70, "usuarios_unicos": 64, "total_pontos": 1215470.0, "total_valor_reais": 23094.02, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 23094.02, "custo_ponto_reais": 0.019}, {"mes": "2026-07", "category_macro": "Cashback", "card_class": "Platinum", "channel": "WEB", "total_itens": 38, "usuarios_unicos": 37, "total_pontos": 699159.0, "total_valor_reais": 13284.06, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 13284.06, "custo_ponto_reais": 0.019}, {"mes": "2026-07", "category_macro": "Cashback", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 39, "usuarios_unicos": 36, "total_pontos": 588246.0, "total_valor_reais": 11176.7, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 11176.7, "custo_ponto_reais": 0.019}, {"mes": "2026-07", "category_macro": "Cashback", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 14, "usuarios_unicos": 14, "total_pontos": 154187.0, "total_valor_reais": 2929.55, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 2929.55, "custo_ponto_reais": 0.019}, {"mes": "2026-07", "category_macro": "Varejo", "card_class": "Black", "channel": "APP", "total_itens": 53, "usuarios_unicos": 48, "total_pontos": 368820.0, "total_valor_reais": 7036.12, "total_coparticipacao_reais": 1947.05, "custo_liquido_programa_reais": 5089.07, "custo_ponto_reais": 0.0138}, {"mes": "2026-07", "category_macro": "Varejo", "card_class": "Black", "channel": "WEB", "total_itens": 26, "usuarios_unicos": 25, "total_pontos": 194731.0, "total_valor_reais": 3919.31, "total_coparticipacao_reais": 1234.96, "custo_liquido_programa_reais": 2684.35, "custo_ponto_reais": 0.01378}, {"mes": "2026-07", "category_macro": "Varejo", "card_class": "Essencial", "channel": "APP", "total_itens": 80, "usuarios_unicos": 76, "total_pontos": 455133.0, "total_valor_reais": 9137.87, "total_coparticipacao_reais": 2874.22, "custo_liquido_programa_reais": 6263.65, "custo_ponto_reais": 0.01376}, {"mes": "2026-07", "category_macro": "Varejo", "card_class": "Essencial", "channel": "WEB", "total_itens": 50, "usuarios_unicos": 48, "total_pontos": 300581.0, "total_valor_reais": 6794.53, "total_coparticipacao_reais": 2653.98, "custo_liquido_programa_reais": 4140.55, "custo_ponto_reais": 0.01378}, {"mes": "2026-07", "category_macro": "Varejo", "card_class": "Gold", "channel": "APP", "total_itens": 60, "usuarios_unicos": 57, "total_pontos": 398207.0, "total_valor_reais": 7701.93, "total_coparticipacao_reais": 2203.25, "custo_liquido_programa_reais": 5498.68, "custo_ponto_reais": 0.01381}, {"mes": "2026-07", "category_macro": "Varejo", "card_class": "Gold", "channel": "WEB", "total_itens": 35, "usuarios_unicos": 34, "total_pontos": 254675.0, "total_valor_reais": 5329.01, "total_coparticipacao_reais": 1804.24, "custo_liquido_programa_reais": 3524.77, "custo_ponto_reais": 0.01384}, {"mes": "2026-07", "category_macro": "Varejo", "card_class": "Infinite", "channel": "APP", "total_itens": 65, "usuarios_unicos": 59, "total_pontos": 423224.0, "total_valor_reais": 10130.48, "total_coparticipacao_reais": 4292.75, "custo_liquido_programa_reais": 5837.73, "custo_ponto_reais": 0.01379}, {"mes": "2026-07", "category_macro": "Varejo", "card_class": "Infinite", "channel": "WEB", "total_itens": 35, "usuarios_unicos": 34, "total_pontos": 215075.0, "total_valor_reais": 4097.56, "total_coparticipacao_reais": 1144.14, "custo_liquido_programa_reais": 2953.42, "custo_ponto_reais": 0.01373}, {"mes": "2026-07", "category_macro": "Varejo", "card_class": "Platinum", "channel": "APP", "total_itens": 78, "usuarios_unicos": 71, "total_pontos": 564891.0, "total_valor_reais": 11995.5, "total_coparticipacao_reais": 4212.23, "custo_liquido_programa_reais": 7783.27, "custo_ponto_reais": 0.01378}, {"mes": "2026-07", "category_macro": "Varejo", "card_class": "Platinum", "channel": "WEB", "total_itens": 37, "usuarios_unicos": 36, "total_pontos": 311803.0, "total_valor_reais": 5730.92, "total_coparticipacao_reais": 1412.52, "custo_liquido_programa_reais": 4318.4, "custo_ponto_reais": 0.01385}, {"mes": "2026-07", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 37, "usuarios_unicos": 32, "total_pontos": 252612.0, "total_valor_reais": 4223.78, "total_coparticipacao_reais": 751.27, "custo_liquido_programa_reais": 3472.51, "custo_ponto_reais": 0.01375}, {"mes": "2026-07", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 19, "usuarios_unicos": 19, "total_pontos": 155063.0, "total_valor_reais": 3250.03, "total_coparticipacao_reais": 1094.63, "custo_liquido_programa_reais": 2155.4, "custo_ponto_reais": 0.0139}, {"mes": "2026-08", "category_macro": "Aereas", "card_class": "Black", "channel": "APP", "total_itens": 66, "usuarios_unicos": 59, "total_pontos": 1908800.0, "total_valor_reais": 31298.12, "total_coparticipacao_reais": 2537.06, "custo_liquido_programa_reais": 28761.06, "custo_ponto_reais": 0.01507}, {"mes": "2026-08", "category_macro": "Aereas", "card_class": "Black", "channel": "WEB", "total_itens": 27, "usuarios_unicos": 25, "total_pontos": 914200.0, "total_valor_reais": 14814.98, "total_coparticipacao_reais": 1275.78, "custo_liquido_programa_reais": 13539.2, "custo_ponto_reais": 0.01481}, {"mes": "2026-08", "category_macro": "Aereas", "card_class": "Essencial", "channel": "APP", "total_itens": 105, "usuarios_unicos": 100, "total_pontos": 2303500.0, "total_valor_reais": 38595.92, "total_coparticipacao_reais": 4034.75, "custo_liquido_programa_reais": 34561.17, "custo_ponto_reais": 0.015}, {"mes": "2026-08", "category_macro": "Aereas", "card_class": "Essencial", "channel": "WEB", "total_itens": 53, "usuarios_unicos": 52, "total_pontos": 1287400.0, "total_valor_reais": 20453.64, "total_coparticipacao_reais": 1331.38, "custo_liquido_programa_reais": 19122.26, "custo_ponto_reais": 0.01485}, {"mes": "2026-08", "category_macro": "Aereas", "card_class": "Gold", "channel": "APP", "total_itens": 75, "usuarios_unicos": 69, "total_pontos": 1419900.0, "total_valor_reais": 23860.31, "total_coparticipacao_reais": 2660.33, "custo_liquido_programa_reais": 21199.98, "custo_ponto_reais": 0.01493}, {"mes": "2026-08", "category_macro": "Aereas", "card_class": "Gold", "channel": "WEB", "total_itens": 48, "usuarios_unicos": 46, "total_pontos": 1005400.0, "total_valor_reais": 17176.83, "total_coparticipacao_reais": 2076.09, "custo_liquido_programa_reais": 15100.74, "custo_ponto_reais": 0.01502}, {"mes": "2026-08", "category_macro": "Aereas", "card_class": "Infinite", "channel": "APP", "total_itens": 100, "usuarios_unicos": 85, "total_pontos": 3258800.0, "total_valor_reais": 53139.01, "total_coparticipacao_reais": 4280.17, "custo_liquido_programa_reais": 48858.84, "custo_ponto_reais": 0.01499}, {"mes": "2026-08", "category_macro": "Aereas", "card_class": "Infinite", "channel": "WEB", "total_itens": 53, "usuarios_unicos": 50, "total_pontos": 1696600.0, "total_valor_reais": 29023.53, "total_coparticipacao_reais": 3483.39, "custo_liquido_programa_reais": 25540.14, "custo_ponto_reais": 0.01505}, {"mes": "2026-08", "category_macro": "Aereas", "card_class": "Platinum", "channel": "APP", "total_itens": 85, "usuarios_unicos": 80, "total_pontos": 1856000.0, "total_valor_reais": 31554.31, "total_coparticipacao_reais": 3614.41, "custo_liquido_programa_reais": 27939.9, "custo_ponto_reais": 0.01505}, {"mes": "2026-08", "category_macro": "Aereas", "card_class": "Platinum", "channel": "WEB", "total_itens": 43, "usuarios_unicos": 41, "total_pontos": 840600.0, "total_valor_reais": 14441.37, "total_coparticipacao_reais": 1824.92, "custo_liquido_programa_reais": 12616.45, "custo_ponto_reais": 0.01501}, {"mes": "2026-08", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 46, "usuarios_unicos": 43, "total_pontos": 1097600.0, "total_valor_reais": 17441.79, "total_coparticipacao_reais": 970.16, "custo_liquido_programa_reais": 16471.63, "custo_ponto_reais": 0.01501}, {"mes": "2026-08", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 28, "usuarios_unicos": 28, "total_pontos": 592000.0, "total_valor_reais": 9995.55, "total_coparticipacao_reais": 1147.9, "custo_liquido_programa_reais": 8847.65, "custo_ponto_reais": 0.01495}, {"mes": "2026-08", "category_macro": "Cashback", "card_class": "Black", "channel": "APP", "total_itens": 28, "usuarios_unicos": 28, "total_pontos": 770184.0, "total_valor_reais": 14633.51, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 14633.51, "custo_ponto_reais": 0.019}, {"mes": "2026-08", "category_macro": "Cashback", "card_class": "Black", "channel": "WEB", "total_itens": 9, "usuarios_unicos": 9, "total_pontos": 261014.0, "total_valor_reais": 4959.29, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 4959.29, "custo_ponto_reais": 0.019}, {"mes": "2026-08", "category_macro": "Cashback", "card_class": "Essencial", "channel": "APP", "total_itens": 126, "usuarios_unicos": 114, "total_pontos": 1308464.0, "total_valor_reais": 24860.91, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 24860.91, "custo_ponto_reais": 0.019}, {"mes": "2026-08", "category_macro": "Cashback", "card_class": "Essencial", "channel": "WEB", "total_itens": 80, "usuarios_unicos": 76, "total_pontos": 959869.0, "total_valor_reais": 18237.59, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 18237.59, "custo_ponto_reais": 0.019}, {"mes": "2026-08", "category_macro": "Cashback", "card_class": "Gold", "channel": "APP", "total_itens": 125, "usuarios_unicos": 110, "total_pontos": 1174423.0, "total_valor_reais": 22314.05, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 22314.05, "custo_ponto_reais": 0.019}, {"mes": "2026-08", "category_macro": "Cashback", "card_class": "Gold", "channel": "WEB", "total_itens": 78, "usuarios_unicos": 75, "total_pontos": 770282.0, "total_valor_reais": 14635.33, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 14635.33, "custo_ponto_reais": 0.019}, {"mes": "2026-08", "category_macro": "Cashback", "card_class": "Infinite", "channel": "APP", "total_itens": 34, "usuarios_unicos": 33, "total_pontos": 914200.0, "total_valor_reais": 17369.83, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 17369.83, "custo_ponto_reais": 0.019}, {"mes": "2026-08", "category_macro": "Cashback", "card_class": "Infinite", "channel": "WEB", "total_itens": 14, "usuarios_unicos": 14, "total_pontos": 262745.0, "total_valor_reais": 4992.16, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 4992.16, "custo_ponto_reais": 0.019}, {"mes": "2026-08", "category_macro": "Cashback", "card_class": "Platinum", "channel": "APP", "total_itens": 77, "usuarios_unicos": 74, "total_pontos": 1301369.0, "total_valor_reais": 24726.02, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 24726.02, "custo_ponto_reais": 0.019}, {"mes": "2026-08", "category_macro": "Cashback", "card_class": "Platinum", "channel": "WEB", "total_itens": 45, "usuarios_unicos": 44, "total_pontos": 697188.0, "total_valor_reais": 13246.58, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 13246.58, "custo_ponto_reais": 0.019}, {"mes": "2026-08", "category_macro": "Cashback", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 40, "usuarios_unicos": 36, "total_pontos": 591359.0, "total_valor_reais": 11235.82, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 11235.82, "custo_ponto_reais": 0.019}, {"mes": "2026-08", "category_macro": "Cashback", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 21, "usuarios_unicos": 20, "total_pontos": 355777.0, "total_valor_reais": 6759.78, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 6759.78, "custo_ponto_reais": 0.019}, {"mes": "2026-08", "category_macro": "Varejo", "card_class": "Black", "channel": "APP", "total_itens": 60, "usuarios_unicos": 53, "total_pontos": 383493.0, "total_valor_reais": 7940.25, "total_coparticipacao_reais": 2641.5, "custo_liquido_programa_reais": 5298.75, "custo_ponto_reais": 0.01382}, {"mes": "2026-08", "category_macro": "Varejo", "card_class": "Black", "channel": "WEB", "total_itens": 21, "usuarios_unicos": 21, "total_pontos": 110994.0, "total_valor_reais": 2003.2, "total_coparticipacao_reais": 486.41, "custo_liquido_programa_reais": 1516.79, "custo_ponto_reais": 0.01367}, {"mes": "2026-08", "category_macro": "Varejo", "card_class": "Essencial", "channel": "APP", "total_itens": 78, "usuarios_unicos": 74, "total_pontos": 591902.0, "total_valor_reais": 11787.88, "total_coparticipacao_reais": 3655.33, "custo_liquido_programa_reais": 8132.55, "custo_ponto_reais": 0.01374}, {"mes": "2026-08", "category_macro": "Varejo", "card_class": "Essencial", "channel": "WEB", "total_itens": 45, "usuarios_unicos": 44, "total_pontos": 212347.0, "total_valor_reais": 4256.68, "total_coparticipacao_reais": 1338.52, "custo_liquido_programa_reais": 2918.16, "custo_ponto_reais": 0.01374}, {"mes": "2026-08", "category_macro": "Varejo", "card_class": "Gold", "channel": "APP", "total_itens": 57, "usuarios_unicos": 54, "total_pontos": 426504.0, "total_valor_reais": 7676.54, "total_coparticipacao_reais": 1776.13, "custo_liquido_programa_reais": 5900.41, "custo_ponto_reais": 0.01383}, {"mes": "2026-08", "category_macro": "Varejo", "card_class": "Gold", "channel": "WEB", "total_itens": 42, "usuarios_unicos": 40, "total_pontos": 218922.0, "total_valor_reais": 3471.72, "total_coparticipacao_reais": 471.4, "custo_liquido_programa_reais": 3000.32, "custo_ponto_reais": 0.0137}, {"mes": "2026-08", "category_macro": "Varejo", "card_class": "Infinite", "channel": "APP", "total_itens": 76, "usuarios_unicos": 70, "total_pontos": 604754.0, "total_valor_reais": 12935.5, "total_coparticipacao_reais": 4585.41, "custo_liquido_programa_reais": 8350.09, "custo_ponto_reais": 0.01381}, {"mes": "2026-08", "category_macro": "Varejo", "card_class": "Infinite", "channel": "WEB", "total_itens": 43, "usuarios_unicos": 40, "total_pontos": 257764.0, "total_valor_reais": 4371.5, "total_coparticipacao_reais": 825.11, "custo_liquido_programa_reais": 3546.39, "custo_ponto_reais": 0.01376}, {"mes": "2026-08", "category_macro": "Varejo", "card_class": "Platinum", "channel": "APP", "total_itens": 68, "usuarios_unicos": 65, "total_pontos": 387758.0, "total_valor_reais": 6473.01, "total_coparticipacao_reais": 1149.96, "custo_liquido_programa_reais": 5323.05, "custo_ponto_reais": 0.01373}, {"mes": "2026-08", "category_macro": "Varejo", "card_class": "Platinum", "channel": "WEB", "total_itens": 32, "usuarios_unicos": 31, "total_pontos": 222560.0, "total_valor_reais": 4292.13, "total_coparticipacao_reais": 1279.19, "custo_liquido_programa_reais": 3012.94, "custo_ponto_reais": 0.01354}, {"mes": "2026-08", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 33, "usuarios_unicos": 31, "total_pontos": 212131.0, "total_valor_reais": 3313.68, "total_coparticipacao_reais": 378.91, "custo_liquido_programa_reais": 2934.77, "custo_ponto_reais": 0.01383}, {"mes": "2026-08", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 26, "usuarios_unicos": 25, "total_pontos": 174906.0, "total_valor_reais": 3946.99, "total_coparticipacao_reais": 1531.19, "custo_liquido_programa_reais": 2415.8, "custo_ponto_reais": 0.01381}, {"mes": "2026-09", "category_macro": "Aereas", "card_class": "Black", "channel": "APP", "total_itens": 83, "usuarios_unicos": 74, "total_pontos": 2165800.0, "total_valor_reais": 36723.96, "total_coparticipacao_reais": 4275.27, "custo_liquido_programa_reais": 32448.69, "custo_ponto_reais": 0.01498}, {"mes": "2026-09", "category_macro": "Aereas", "card_class": "Black", "channel": "WEB", "total_itens": 44, "usuarios_unicos": 42, "total_pontos": 1118500.0, "total_valor_reais": 19474.87, "total_coparticipacao_reais": 2669.41, "custo_liquido_programa_reais": 16805.46, "custo_ponto_reais": 0.01502}, {"mes": "2026-09", "category_macro": "Aereas", "card_class": "Essencial", "channel": "APP", "total_itens": 136, "usuarios_unicos": 116, "total_pontos": 2842400.0, "total_valor_reais": 47309.54, "total_coparticipacao_reais": 4600.82, "custo_liquido_programa_reais": 42708.72, "custo_ponto_reais": 0.01503}, {"mes": "2026-09", "category_macro": "Aereas", "card_class": "Essencial", "channel": "WEB", "total_itens": 52, "usuarios_unicos": 51, "total_pontos": 1045000.0, "total_valor_reais": 16453.66, "total_coparticipacao_reais": 765.28, "custo_liquido_programa_reais": 15688.38, "custo_ponto_reais": 0.01501}, {"mes": "2026-09", "category_macro": "Aereas", "card_class": "Gold", "channel": "APP", "total_itens": 108, "usuarios_unicos": 100, "total_pontos": 2292600.0, "total_valor_reais": 39926.97, "total_coparticipacao_reais": 5622.83, "custo_liquido_programa_reais": 34304.14, "custo_ponto_reais": 0.01496}, {"mes": "2026-09", "category_macro": "Aereas", "card_class": "Gold", "channel": "WEB", "total_itens": 52, "usuarios_unicos": 51, "total_pontos": 975800.0, "total_valor_reais": 16366.45, "total_coparticipacao_reais": 1703.86, "custo_liquido_programa_reais": 14662.59, "custo_ponto_reais": 0.01503}, {"mes": "2026-09", "category_macro": "Aereas", "card_class": "Infinite", "channel": "APP", "total_itens": 85, "usuarios_unicos": 79, "total_pontos": 2534500.0, "total_valor_reais": 42485.09, "total_coparticipacao_reais": 4343.68, "custo_liquido_programa_reais": 38141.41, "custo_ponto_reais": 0.01505}, {"mes": "2026-09", "category_macro": "Aereas", "card_class": "Infinite", "channel": "WEB", "total_itens": 53, "usuarios_unicos": 51, "total_pontos": 1551600.0, "total_valor_reais": 26520.92, "total_coparticipacao_reais": 3244.12, "custo_liquido_programa_reais": 23276.8, "custo_ponto_reais": 0.015}, {"mes": "2026-09", "category_macro": "Aereas", "card_class": "Platinum", "channel": "APP", "total_itens": 96, "usuarios_unicos": 81, "total_pontos": 2234500.0, "total_valor_reais": 40197.98, "total_coparticipacao_reais": 6636.51, "custo_liquido_programa_reais": 33561.47, "custo_ponto_reais": 0.01502}, {"mes": "2026-09", "category_macro": "Aereas", "card_class": "Platinum", "channel": "WEB", "total_itens": 48, "usuarios_unicos": 44, "total_pontos": 969900.0, "total_valor_reais": 16266.64, "total_coparticipacao_reais": 1647.88, "custo_liquido_programa_reais": 14618.76, "custo_ponto_reais": 0.01507}, {"mes": "2026-09", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 59, "usuarios_unicos": 54, "total_pontos": 1293300.0, "total_valor_reais": 24440.51, "total_coparticipacao_reais": 5086.31, "custo_liquido_programa_reais": 19354.2, "custo_ponto_reais": 0.01496}, {"mes": "2026-09", "category_macro": "Aereas", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 30, "usuarios_unicos": 30, "total_pontos": 738400.0, "total_valor_reais": 11557.85, "total_coparticipacao_reais": 521.19, "custo_liquido_programa_reais": 11036.66, "custo_ponto_reais": 0.01495}, {"mes": "2026-09", "category_macro": "Cashback", "card_class": "Black", "channel": "APP", "total_itens": 15, "usuarios_unicos": 15, "total_pontos": 358435.0, "total_valor_reais": 6810.28, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 6810.28, "custo_ponto_reais": 0.019}, {"mes": "2026-09", "category_macro": "Cashback", "card_class": "Black", "channel": "WEB", "total_itens": 9, "usuarios_unicos": 9, "total_pontos": 266825.0, "total_valor_reais": 5069.68, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 5069.68, "custo_ponto_reais": 0.019}, {"mes": "2026-09", "category_macro": "Cashback", "card_class": "Essencial", "channel": "APP", "total_itens": 155, "usuarios_unicos": 142, "total_pontos": 1630385.0, "total_valor_reais": 30977.42, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 30977.42, "custo_ponto_reais": 0.019}, {"mes": "2026-09", "category_macro": "Cashback", "card_class": "Essencial", "channel": "WEB", "total_itens": 66, "usuarios_unicos": 63, "total_pontos": 680250.0, "total_valor_reais": 12924.79, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 12924.79, "custo_ponto_reais": 0.019}, {"mes": "2026-09", "category_macro": "Cashback", "card_class": "Gold", "channel": "APP", "total_itens": 146, "usuarios_unicos": 126, "total_pontos": 1530113.0, "total_valor_reais": 29072.24, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 29072.24, "custo_ponto_reais": 0.019}, {"mes": "2026-09", "category_macro": "Cashback", "card_class": "Gold", "channel": "WEB", "total_itens": 84, "usuarios_unicos": 80, "total_pontos": 794473.0, "total_valor_reais": 15095.03, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 15095.03, "custo_ponto_reais": 0.019}, {"mes": "2026-09", "category_macro": "Cashback", "card_class": "Infinite", "channel": "APP", "total_itens": 45, "usuarios_unicos": 41, "total_pontos": 943076.0, "total_valor_reais": 17918.47, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 17918.47, "custo_ponto_reais": 0.019}, {"mes": "2026-09", "category_macro": "Cashback", "card_class": "Infinite", "channel": "WEB", "total_itens": 20, "usuarios_unicos": 19, "total_pontos": 621427.0, "total_valor_reais": 11807.12, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 11807.12, "custo_ponto_reais": 0.019}, {"mes": "2026-09", "category_macro": "Cashback", "card_class": "Platinum", "channel": "APP", "total_itens": 77, "usuarios_unicos": 70, "total_pontos": 969708.0, "total_valor_reais": 18424.48, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 18424.48, "custo_ponto_reais": 0.019}, {"mes": "2026-09", "category_macro": "Cashback", "card_class": "Platinum", "channel": "WEB", "total_itens": 33, "usuarios_unicos": 33, "total_pontos": 766925.0, "total_valor_reais": 14571.59, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 14571.59, "custo_ponto_reais": 0.019}, {"mes": "2026-09", "category_macro": "Cashback", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 34, "usuarios_unicos": 33, "total_pontos": 566200.0, "total_valor_reais": 10757.8, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 10757.8, "custo_ponto_reais": 0.019}, {"mes": "2026-09", "category_macro": "Cashback", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 20, "usuarios_unicos": 20, "total_pontos": 257849.0, "total_valor_reais": 4899.15, "total_coparticipacao_reais": 0.0, "custo_liquido_programa_reais": 4899.15, "custo_ponto_reais": 0.019}, {"mes": "2026-09", "category_macro": "Varejo", "card_class": "Black", "channel": "APP", "total_itens": 75, "usuarios_unicos": 69, "total_pontos": 473206.0, "total_valor_reais": 10116.25, "total_coparticipacao_reais": 3580.96, "custo_liquido_programa_reais": 6535.29, "custo_ponto_reais": 0.01381}, {"mes": "2026-09", "category_macro": "Varejo", "card_class": "Black", "channel": "WEB", "total_itens": 28, "usuarios_unicos": 27, "total_pontos": 173825.0, "total_valor_reais": 3775.79, "total_coparticipacao_reais": 1367.59, "custo_liquido_programa_reais": 2408.2, "custo_ponto_reais": 0.01385}, {"mes": "2026-09", "category_macro": "Varejo", "card_class": "Essencial", "channel": "APP", "total_itens": 85, "usuarios_unicos": 79, "total_pontos": 517202.0, "total_valor_reais": 11318.02, "total_coparticipacao_reais": 4169.21, "custo_liquido_programa_reais": 7148.81, "custo_ponto_reais": 0.01382}, {"mes": "2026-09", "category_macro": "Varejo", "card_class": "Essencial", "channel": "WEB", "total_itens": 47, "usuarios_unicos": 44, "total_pontos": 290579.0, "total_valor_reais": 5803.76, "total_coparticipacao_reais": 1827.0, "custo_liquido_programa_reais": 3976.76, "custo_ponto_reais": 0.01369}, {"mes": "2026-09", "category_macro": "Varejo", "card_class": "Gold", "channel": "APP", "total_itens": 68, "usuarios_unicos": 66, "total_pontos": 494507.0, "total_valor_reais": 10774.25, "total_coparticipacao_reais": 3973.38, "custo_liquido_programa_reais": 6800.87, "custo_ponto_reais": 0.01375}, {"mes": "2026-09", "category_macro": "Varejo", "card_class": "Gold", "channel": "WEB", "total_itens": 30, "usuarios_unicos": 29, "total_pontos": 205619.0, "total_valor_reais": 4075.34, "total_coparticipacao_reais": 1232.77, "custo_liquido_programa_reais": 2842.57, "custo_ponto_reais": 0.01382}, {"mes": "2026-09", "category_macro": "Varejo", "card_class": "Infinite", "channel": "APP", "total_itens": 89, "usuarios_unicos": 83, "total_pontos": 571290.0, "total_valor_reais": 11305.14, "total_coparticipacao_reais": 3425.92, "custo_liquido_programa_reais": 7879.22, "custo_ponto_reais": 0.01379}, {"mes": "2026-09", "category_macro": "Varejo", "card_class": "Infinite", "channel": "WEB", "total_itens": 51, "usuarios_unicos": 48, "total_pontos": 344221.0, "total_valor_reais": 6768.34, "total_coparticipacao_reais": 2019.39, "custo_liquido_programa_reais": 4748.95, "custo_ponto_reais": 0.0138}, {"mes": "2026-09", "category_macro": "Varejo", "card_class": "Platinum", "channel": "APP", "total_itens": 74, "usuarios_unicos": 64, "total_pontos": 455014.0, "total_valor_reais": 8629.91, "total_coparticipacao_reais": 2343.14, "custo_liquido_programa_reais": 6286.77, "custo_ponto_reais": 0.01382}, {"mes": "2026-09", "category_macro": "Varejo", "card_class": "Platinum", "channel": "WEB", "total_itens": 36, "usuarios_unicos": 35, "total_pontos": 295506.0, "total_valor_reais": 4974.78, "total_coparticipacao_reais": 905.45, "custo_liquido_programa_reais": 4069.33, "custo_ponto_reais": 0.01377}, {"mes": "2026-09", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "APP", "total_itens": 42, "usuarios_unicos": 36, "total_pontos": 281843.0, "total_valor_reais": 5498.14, "total_coparticipacao_reais": 1590.34, "custo_liquido_programa_reais": 3907.8, "custo_ponto_reais": 0.01387}, {"mes": "2026-09", "category_macro": "Varejo", "card_class": "Platinum Elo", "channel": "WEB", "total_itens": 30, "usuarios_unicos": 29, "total_pontos": 233608.0, "total_valor_reais": 4025.71, "total_coparticipacao_reais": 793.42, "custo_liquido_programa_reais": 3232.29, "custo_ponto_reais": 0.01384}];
+
+    // FUNÇÃO DO CHAT FLUTUANTE
+    let chatOpen = false;
+    function toggleChat() {
+      const win = document.getElementById('aiChatWindow');
+      chatOpen = !chatOpen;
+      win.style.display = chatOpen ? 'flex' : 'none';
+      if (chatOpen) document.getElementById('aiChatInput').focus();
+    }
+
+    async function sendChatMessage() {
+      const input = document.getElementById('aiChatInput');
+      const query = input.value.trim();
+      if (!query) return;
+
+      const msgs = document.getElementById('aiChatMessages');
+      
+      // User msg
+      const userDiv = document.createElement('div');
+      userDiv.style.alignSelf = 'flex-end';
+      userDiv.style.background = 'var(--primary)';
+      userDiv.style.color = '#fff';
+      userDiv.style.padding = '8px 12px';
+      userDiv.style.maxWidth = '85%';
+      userDiv.textContent = query;
+      msgs.appendChild(userDiv);
+      input.value = '';
+      msgs.scrollTop = msgs.scrollHeight;
+
+      // Loading indicator
+      const loadDiv = document.createElement('div');
+      loadDiv.style.alignSelf = 'flex-start';
+      loadDiv.style.color = 'var(--text-mid)';
+      loadDiv.style.fontStyle = 'italic';
+      loadDiv.textContent = 'Processando com Gemini...';
+      msgs.appendChild(loadDiv);
+      msgs.scrollTop = msgs.scrollHeight;
+
+      try {
+        const resp = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: query })
+        });
+        const data = await resp.json();
+        loadDiv.remove();
+
+        const agentDiv = document.createElement('div');
+        agentDiv.style.alignSelf = 'flex-start';
+        agentDiv.style.background = 'var(--bg-surface)';
+        agentDiv.style.borderLeft = '3px solid var(--accent-synapse)';
+        agentDiv.style.color = 'var(--text-hi)';
+        agentDiv.style.padding = '10px 14px';
+        agentDiv.style.maxWidth = '90%';
+        agentDiv.textContent = data.answer || data.error;
+        msgs.appendChild(agentDiv);
+      } catch (err) {
+        loadDiv.remove();
+        const errDiv = document.createElement('div');
+        errDiv.style.alignSelf = 'flex-start';
+        errDiv.style.background = 'rgba(255,77,109,0.15)';
+        errDiv.style.borderLeft = '3px solid var(--error)';
+        errDiv.style.color = 'var(--text-hi)';
+        errDiv.style.padding = '10px 14px';
+        errDiv.innerHTML = 'Para conversar com o agente ao vivo, execute no terminal:<br><code>py server.py</code> e acesse via <code>http://localhost:8000</code>.<br><br>Ou execute diretamente via CLI: <code>py agente/agent.py "' + query + '"</code>';
+        msgs.appendChild(errDiv);
+      }
+      msgs.scrollTop = msgs.scrollHeight;
+    }
+
+    // CHART CONFIG DEFAULTS (DARK BRAIN003 THEME)
+    Chart.defaults.color = '#A9B4D0';
+    Chart.defaults.font.family = "'Roboto Mono', monospace";
+    Chart.defaults.plugins.tooltip.backgroundColor = '#141C3E';
+    Chart.defaults.plugins.tooltip.titleColor = '#EAF0FF';
+    Chart.defaults.plugins.tooltip.borderColor = '#212C5B';
+    Chart.defaults.plugins.tooltip.borderWidth = 1;
+    Chart.defaults.plugins.tooltip.padding = 10;
+
+    // TAB SWITCHER
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    // POPULAR TABELA DE DADOS
+    const tbody = document.querySelector('#tableMonthly tbody');
+    monthlyKpis.forEach(row => {
+      const tr = document.createElement('tr');
+      const metaStatus = (row.meta_aereas_atingida && row.meta_varejo_atingida)
+        ? '<span class="badge-ok">CONFORME</span>'
+        : (row.meta_aereas_atingida && !row.meta_varejo_atingida)
+        ? '<span class="badge-bad">VAREJO VIOLADO</span>'
+        : '<span class="badge-bad">AMBAS VIOLADAS</span>';
+
+      tr.innerHTML = `
+        <td class="mono"><strong>${row.mes}</strong></td>
+        <td class="mono">${(row.pontos_creditados / 1e6).toFixed(2)}</td>
+        <td class="mono">${(row.total_pontos_resgatados / 1e6).toFixed(2)}</td>
+        <td class="mono">${(row.pontos_aereas / 1e6).toFixed(2)}</td>
+        <td class="mono">${(row.pontos_varejo / 1e6).toFixed(2)}</td>
+        <td class="mono">${row.pontos_pix ? (row.pontos_pix / 1e6).toFixed(2) : '0.00'}</td>
+        <td class="mono">${row.share_aereas_pct}%</td>
+        <td class="mono ${row.share_varejo_pct < 20 ? 'badge-bad' : ''}">${row.share_varejo_pct}%</td>
+        <td class="mono">${row.share_pix_pct}%</td>
+        <td class="mono">R$ ${row.custo_total_programa_reais.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
+        <td class="mono">R$ ${row.custo_medio_por_ponto.toFixed(5)}</td>
+        <td>${metaStatus}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // INICIALIZAR GRÁFICOS
+    window.addEventListener('DOMContentLoaded', () => {
+      const labels = monthlyKpis.map(r => r.mes);
+
+      // 1. CHART SHARES
+      new Chart(document.getElementById('chartShares'), {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Share Aéreas (%)',
+              data: monthlyKpis.map(r => r.share_aereas_pct),
+              borderColor: '#1E2BFF',
+              backgroundColor: 'rgba(30, 43, 255, 0.1)',
+              tension: 0.3,
+              fill: false,
+              borderWidth: 2.5
+            },
+            {
+              label: 'Share Varejo (%)',
+              data: monthlyKpis.map(r => r.share_varejo_pct),
+              borderColor: '#3DFF6E',
+              backgroundColor: 'rgba(61, 255, 110, 0.1)',
+              tension: 0.3,
+              fill: false,
+              borderWidth: 2.5
+            },
+            {
+              label: 'Share Pix (%)',
+              data: monthlyKpis.map(r => r.share_pix_pct),
+              borderColor: '#FF4D6D',
+              backgroundColor: 'rgba(255, 77, 109, 0.15)',
+              tension: 0.3,
+              fill: true,
+              borderWidth: 2.5
+            },
+            {
+              label: 'Meta Mínima Varejo (20%)',
+              data: labels.map(() => 20),
+              borderColor: '#FFB300',
+              borderDash: [5, 5],
+              borderWidth: 2,
+              pointRadius: 0,
+              fill: false
+            },
+            {
+              label: 'Meta Mínima Aéreas (50%)',
+              data: labels.map(() => 50),
+              borderColor: '#00CFFF',
+              borderDash: [5, 5],
+              borderWidth: 2,
+              pointRadius: 0,
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              min: 0,
+              max: 100,
+              grid: { color: 'rgba(33, 44, 91, 0.4)' },
+              ticks: { callback: v => v + '%' }
+            },
+            x: { grid: { color: 'rgba(33, 44, 91, 0.4)' } }
+          }
+        }
+      });
+
+      // 2. CHART VOLUME EMPILHADO
+      new Chart(document.getElementById('chartVolume'), {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Aéreas (M pts)',
+              data: monthlyKpis.map(r => (r.pontos_aereas / 1e6).toFixed(2)),
+              backgroundColor: '#1E2BFF'
+            },
+            {
+              label: 'Varejo (M pts)',
+              data: monthlyKpis.map(r => (r.pontos_varejo / 1e6).toFixed(2)),
+              backgroundColor: '#3DFF6E'
+            },
+            {
+              label: 'Pix (M pts)',
+              data: monthlyKpis.map(r => ((r.pontos_pix || 0) / 1e6).toFixed(2)),
+              backgroundColor: '#FF4D6D'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { stacked: true, grid: { display: false } },
+            y: { stacked: true, grid: { color: 'rgba(33, 44, 91, 0.4)' } }
+          }
+        }
+      });
+
+      // 3. CHART CRM CONVERSION
+      new Chart(document.getElementById('chartCrm'), {
+        type: 'bar',
+        data: {
+          labels: crmCohorts.map(c => c.crm_pix_cohort.replace(/^[0-9]\.\s*/, '')),
+          datasets: [{
+            label: 'Taxa de Conversão para Pix (%)',
+            data: crmCohorts.map(c => c.taxa_conversao_pct),
+            backgroundColor: ['#1E2BFF', '#2438E6', '#00CFFF', '#6B7699', '#3DFF6E']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { min: 0, max: 25, ticks: { callback: v => v + '%' } }
+          }
+        }
+      });
+
+      // 4. CHART TAXA PIX AUDIT
+      new Chart(document.getElementById('chartTaxaPix'), {
+        type: 'bar',
+        data: {
+          labels: operatorAudit.map(r => r.mes),
+          datasets: [
+            {
+              label: 'Taxa do Relatório (~R$ 0,016)',
+              data: operatorAudit.map(r => r.relatorio_taxa_calculada),
+              backgroundColor: 'rgba(255, 77, 109, 0.6)'
+            },
+            {
+              label: 'Taxa Real Efetiva (R$ 0,0190)',
+              data: operatorAudit.map(r => r.sistema_taxa_aprovada_real),
+              backgroundColor: '#3DFF6E'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { min: 0.012, max: 0.021, ticks: { callback: v => 'R$ ' + v.toFixed(3) } }
+          }
+        }
+      });
+
+      // 5. CHART BREAKAGE AUDIT
+      new Chart(document.getElementById('chartBreakage'), {
+        type: 'bar',
+        data: {
+          labels: ['Confusão Diretor (Resgate)', 'Breakage Migrado (Real)', 'Teto Meta Breakage', 'Breakage Safra Nova'],
+          datasets: [{
+            data: [42.45, 19.78, 20.0, 0.0],
+            backgroundColor: ['#FF4D6D', '#3DFF6E', '#FFB300', '#00CFFF']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { min: 0, max: 50, ticks: { callback: v => v + '%' } }
+          }
+        }
+      });
+
+      // 6. CHART UNIT COSTS
+      new Chart(document.getElementById('chartUnitCosts'), {
+        type: 'bar',
+        data: {
+          labels: ['Pix Pontua+', 'Aéreas (Líquido)', 'Varejo (Produtos)', 'Varejo (Parceiros)'],
+          datasets: [{
+            data: [0.0190, 0.0150, 0.0139, 0.0125],
+            backgroundColor: ['#FF4D6D', '#FFB300', '#3DFF6E', '#00CFFF']
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { min: 0, max: 0.022, ticks: { callback: v => 'R$ ' + v.toFixed(4) } }
+          }
+        }
+      });
+
+      // 7. CHART CARD CLASS SHARE
+      const cardClasses = ['Essencial', 'Gold', 'Platinum', 'Platinum Elo', 'Infinite', 'Black'];
+      const cardPixShares = [34.7, 36.6, 34.2, 29.0, 20.7, 18.4];
+      new Chart(document.getElementById('chartCardShare'), {
+        type: 'bar',
+        data: {
+          labels: cardClasses,
+          datasets: [{
+            label: 'Share de Pix Pós-Lançamento (%)',
+            data: cardPixShares,
+            backgroundColor: '#00CFFF'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: { min: 0, max: 45, ticks: { callback: v => v + '%' } }
+          }
+        }
+      });
+
+      // 8. CHART CHANNELS
+      new Chart(document.getElementById('chartChannels'), {
+        type: 'doughnut',
+        data: {
+          labels: ['APP Mobile (63,9%)', 'Portal WEB (36,1%)'],
+          datasets: [{
+            data: [208.14, 112.13],
+            backgroundColor: ['#1E2BFF', '#00CFFF'],
+            borderColor: '#0E142F',
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+
+    });
+  </script>
+</body>
+</html>

@@ -143,3 +143,178 @@ Seja factual. Não invente nada que não esteja na conversa.
 ```
 
 Links de compartilhamento ou exportações das conversas (por exemplo, `/export` no Claude Code) são bem-vindos em `ai-log/`.
+
+---
+
+# Documentação da Solução · Case Analytics Engineer
+
+Este documento detalha a solução completa de engenharia de dados, modelagem dimensional, testes automatizados, dashboard executivo e agente de IA desenvolvidos para responder às perguntas estratégicas da diretoria sobre o Programa Pontua+.
+
+---
+
+## 1. Guia Rápido de Execução (Single-Command Setup)
+
+### Pré-requisitos
+- Python 3.10+ instalado (`py` ou `python`).
+- Variável de ambiente `GEMINI_API_KEY` configurada com sua chave da Google Gemini API (para o agente).
+
+```bash
+# Configuração da chave de API no terminal:
+# No Windows PowerShell:
+$env:GEMINI_API_KEY="sua-chave-aqui"
+
+# No Linux / macOS:
+export GEMINI_API_KEY="sua-chave-aqui"
+```
+
+### Passo a Passo de Ponta a Ponta
+
+1. **Instalar Dependências:**
+   ```bash
+   py -m pip install -r requirements.txt
+   ```
+   *(Dependências utilizadas: `duckdb`, `pytest`, `pandas`, `google-genai`)*
+
+2. **Reconstruir Pipeline e Camadas Analíticas a partir dos CSVs brutos (`dados/`):**
+   ```bash
+   py pipeline/build_pipeline.py
+   ```
+   *Lê os 9 arquivos CSV em `dados/`, processa as camadas Staging, Marts e Agregadas, e exporta os datasets prontos em `entrega/dashboard/data/` e `agente/data/`.*
+
+3. **Executar a Suíte de Testes Automatizados:**
+   ```bash
+   py -m pytest -v tests/test_pipeline.py
+   ```
+   *Executa os 13 testes de integridade referencial, unicidade de grão, reconciliação contábil do ledger e auditoria das 3 afirmações.*
+
+4. **Subir Dashboard e Agente com um Único Comando:**
+   ```bash
+   py server.py
+   ```
+   *Inicia o servidor unificado em `http://localhost:8000`:*
+   - **Dashboard Estratégico Interativo:** `http://localhost:8000` (com widget flutuante de chat com IA integrado!)
+   - **Apresentação Executiva (Deck HTML):** `http://localhost:8000/apresentacao`
+   - **Endpoint da API do Agente:** `POST http://localhost:8000/api/chat`
+
+5. **Executar o Agente de IA via Terminal (CLI):**
+   ```bash
+   # Modo interativo (chat no terminal):
+   py agente/agent.py
+
+   # Pergunta direta via linha de comando:
+   py agente/agent.py "Qual foi o share de varejo em agosto de 2026?"
+
+   # Executar a bateria de perguntas de teste exigidas no case:
+   py agente/agent.py --test
+   ```
+
+---
+
+## 2. Justificativa da Estrutura de Dados (Dashboard e Agente)
+
+Para atender simultaneamente ao **Dashboard Executivo** (que exige performance instantânea e cumpre a restrição de **apenas dados agregados**) e ao **Agente de IA** (que exige consistência semântica e imunidade a alucinações), adotamos uma arquitetura em camadas estruturada em DuckDB:
+
+```
+[dados/*.csv] (Camada Bruta / Raw)
+      │
+      ▼
+[Staging Views] (Tipagem estrita, limpeza, extração de JSON do CRM)
+      │
+      ▼
+[Marts Dimensionais] (dim_users, fct_order_items, fct_points_movements)
+      │
+      ▼
+[Semantic / Serving Layer] (Tabelas Agregadas e Métricas de Negócio)
+      ├──> entrega/dashboard/data/*.json & *.csv (Alimenta Dashboard SPA)
+      └──> agente/data/*.json + semantic_dictionary.json (Alimenta Agente Gemini)
+```
+
+### Por que esta estrutura atende aos dois objetivos?
+1. **Para o Dashboard:**
+   - **Privacidade e Governança:** O build estático publicado do dashboard consome exclusivamente arquivos JSON/CSV pré-agregados, garantindo que nenhum dado nominal ou transacional de clientes trafegue na visualização.
+   - **Performance Instantânea:** Todos os cálculos complexos de shares contratuais, custos ponderados e agregações temporais são resolvidos em tempo de build, eliminando gargalos de processamento no navegador.
+2. **Para o Agente de IA (Gemini):**
+   - **Context Grounding Preciso:** Em vez de expor 146 mil linhas cruas do ledger (que estourariam o contexto ou gerariam alucinações de soma), o agente recebe tabelas de grão consolidado (`agg_monthly_kpis`, `agg_breakage_analysis`, `agg_operator_audit`, `agg_pix_crm_cohorts`).
+   - **Dicionário Semântico (`semantic_dictionary.json`):** Cada coluna tem seu tipo, grão e definição de negócio declarados, permitindo que a LLM compreenda exatamente o significado de conceitos como "taxa de resgate", "breakage" e "efeito diluição".
+   - **Resolução de Anomalia de Dados na Engenharia:** A tabela `orders.csv` possui a coluna `user_id` 100% nula. O pipeline resolveu essa anomalia via junção relacional 1:1 com `carts.csv`, garantindo que o agente e o dashboard tenham dados de clientes íntegros sem intervenção manual.
+
+---
+
+## 3. Fatos Confirmados nos Dados
+
+Todos os números abaixo foram calculados e validados por código executável e testados na suíte `tests/test_pipeline.py`:
+
+1. **Explosão no Volume de Resgates pós-Pix:**
+   - No pré-Pix (fev a abr/2026), a média de resgates era de **15,5M a 19M de pontos/mês**.
+   - Com o lançamento em 27/05/2026, o volume saltou para **30,4M em junho (+103%)** e atingiu **33,5M em setembro/2026**.
+   - O Pix se estabilizou em cerca de **9,4M de pontos/mês** (~28% a 30% do total resgatado no programa).
+
+2. **Violação da Meta Contratual de Varejo ($\ge 20\%$):**
+   - O share de Varejo despencou de **20,3% (maio/2026)** para **13,3% (junho)**, **12,8% (julho)**, **12,1% (agosto)** e **13,0% (setembro)**.
+   - **Diagnóstico Técnico (Efeito Diluição):** O volume absoluto em Varejo permaneceu praticamente estável (2,88M em jan; 3,63M em abr; 4,37M em mai; 4,04M em jun; 4,34M em set). A quebra da meta decorre exclusivamente da expansão de +55% no denominador causada pela entrada do Pix.
+
+3. **Pressão na Meta Contratual de Aéreas ($\ge 50\%$):**
+   - O share de passagens aéreas caiu de **80,7% (abril)** para **56,3% (junho)** e fechou setembro em **59,0%**, reduzindo perigosamente a margem de segurança contratual para menos de 10 p.p.
+
+4. **Auditoria da Afirmação 1 (CRM: *"A comunicação de lançamento explica o sucesso do Pix"*): FALSA**
+   - O Pix foi lançado em **27/05/2026**. O e-mail de lançamento só foi enviado em **28/05 às 13:00**. Clientes já resgatavam Pix antes do disparo.
+   - Dos 2.140 clientes únicos que fizeram Pix aprovado, **apenas 39 clientes (1,8%)** clicaram no e-mail de lançamento.
+   - **435 clientes (20,3%)** que resgataram Pix sequer foram cadastrados ou impactados pela campanha.
+   - **Taxa de conversão:** Clicou no e-mail (**15,48%**) vs Não impactado pela campanha (**18,13%**). O sucesso foi tração 100% orgânica decorrente da atratividade do dinheiro em conta.
+
+5. **Auditoria da Afirmação 2 (Operador: *"O Pix sai a cerca de R$ 0,016 por ponto"*): FALSA (Erro de Cálculo)**
+   - Em todas as 2.808 transações de Pix aprovadas em `order_items.csv`, a taxa cobrada foi rigorosamente de **R$ 0,019000 por ponto** (R$ 721.610,73 desembolsados para 37.979.434 pontos).
+   - **Origem do erro do operador:** No `relatorio_mensal_cliente.csv`, o operador incluiu pedidos cancelados, estornados e inválidos no total de pontos (denominador de 10,7M), mas dividiu apenas pelos Reais aprovados (R$ 174.261), derrubando a razão matemática artificialmente para R$ 0,01627.
+
+6. **Auditoria da Afirmação 3 (Diretor: *"Nosso breakage está em 40%! Meta: até 20%"*): FALSA (Confusão Conceitual)**
+   - O diretor confundiu **Taxa de Resgate (Redemption Rate)** com **Breakage**.
+   - No ledger, o total de pontos resgatados sobre o total de créditos emitidos ($323,4\text{M} \div 761,8\text{M}$) é exatamente **42,45%**.
+   - O **Breakage real** da base migrada (pontos expirados na op 103 sobre o total migrado na op 100) é de **19,78%** ($64.090.805 \div 324.024.198$), rigorosamente dentro da meta de até 20%.
+   - Os pontos emitidos no programa novo (op 1) têm validade de 24 meses (`valid_until` entre set/2027 e set/2028), tendo breakage atual de **0,0%**.
+
+7. **Estrutura de Custos Unitários Líquidos:**
+   - **Varejo Transferências (Nuvem, Pontos Max):** R$ 0,01250 por ponto.
+   - **Varejo Produtos (Casa&Cia, Tech10, Mega):** R$ 0,01390 por ponto (parceiros próprios do grupo).
+   - **Passagens Aéreas:** R$ 0,01500 por ponto (custo líquido após coparticipação em dinheiro do cliente).
+   - **Pix Pontua+:** R$ 0,01900 por ponto.
+   - *Conclusão Financeira:* O Pix é **26,7% mais caro** que Aéreas e **52,0% mais caro** que Varejo parceiro. Como passagens aéreas já custam mais caro do que o banco repassa por ponto, o Pix opera em severo prejuízo operacional (drenou R$ 721.610 em caixa em 4 meses).
+
+---
+
+## 4. Hipóteses Adotadas
+
+1. **Precedência de Cartão do Usuário:** Para usuários que possuem múltiplos cartões em `cards.csv`, assumiu-se como classificação primária do cliente o cartão com `is_most_recent = TRUE` e data de criação mais recente.
+2. **Reconciliação FIFO de Saldo:** Como os saldos de pontos são fungíveis na carteira do cliente, assumiu-se que os resgates consom prioritariamente os pontos mais antigos (da migração), o que é compatível com a expiração observada na base legada.
+3. **Custo do Repasse do Banco Aurora:** Como o contrato de repasse por ponto acumulado no cartão não foi fornecido na base, assumiu-se a premissa de negócio descrita no briefing de que *passagens aéreas (R$ 0,0150/pt) custam mais caro do que o banco repassa*, implicando que o repasse do banco é inferior a R$ 0,0150 por ponto.
+
+---
+
+## 5. Perguntas para as Áreas de Negócio e Sistemas
+
+### Para o Banco Aurora & Área Comercial:
+1. **Fórmula de Repasse Comercial:** Qual é o valor exato em Reais repassado pelo Banco Aurora à operadora por ponto emitido no cartão de crédito?
+2. **Penalidades Contratuais:** O não cumprimento da meta de 20% em Varejo sujeita a operadora a multas contratuais, renegociação compulsória de margem ou perda de exclusividade?
+3. **Impacto no Negócio Bancário:** O Pix gerou aumento no volume de compras (spend) ou reduziu o cancelamento (churn) de cartões de alta renda do Banco Aurora?
+
+### Para os Donos dos Sistemas & Engenharia:
+1. **Anomalia na Tabela de Pedidos:** Por que o campo `orders.user_id` está 100% nulo em produção, obrigando a resolução via `carts`? Existe plano de correção ou migração de schema?
+2. **Rotina de Fechamento do Operador:** Como o script que gera o `relatorio_mensal_cliente.csv` é executado? Por que ele não filtra pedidos cancelados/estornados antes de agregar os pontos?
+3. **Regra de Expiração da Safra Nova:** Qual será a política de comunicação e tolerância para os pontos do programa novo quando começarem a vencer em setembro de 2027?
+
+---
+
+## 6. Documentação do Agente de IA (`agente/`)
+
+O agente de IA está localizado em `agente/agent.py` e se conecta à API oficial do Google Gemini utilizando a chave configurada na variável `GEMINI_API_KEY`.
+
+### Perguntas que o Agente Responde com Precisão:
+1. *"Qual foi o comportamento do share de Varejo após o lançamento do Pix?"* -> Apresenta a queda de 20% para 13% e explica detalhadamente o efeito diluição em relação ao volume absoluto estável.
+2. *"A campanha de e-mail do time de CRM foi a responsável pela adesão do Pix?"* -> Refuta a tese com a conversão de 15,48% em quem clicou vs 18,13% em não impactados.
+3. *"Qual é o custo unitário por ponto de cada modalidade de resgate e qual dá mais prejuízo?"* -> Apresenta a tabela comparativa (R$ 0,0125 a R$ 0,0190) e aponta o Pix como maior drenador de margem.
+4. *"O que explica o valor de R$ 0,016 reportado pelo operador?"* -> Explica a falha contábil de incluir cancelados no denominador.
+
+### Pergunta com Recusa / Ressalva Obrigatória:
+- **Pergunta:** *"Qual foi o lucro líquido em Reais da operadora no último mês?"*
+- **Comportamento do Agente:** O agente **se recusa a fornecer um número fechado de lucro líquido** e emite uma ressalva formal:
+  > *"Não é possível calcular o Lucro Líquido da operadora com os dados disponíveis. Os dados cobrem detalhadamente os custos de resgate e valores desembolsados, mas não trazem o contrato comercial da taxa de repasse por ponto emitido paga pelo Banco Aurora (a receita do programa). Qualquer estimativa sem esse dado seria alucinação."*
+

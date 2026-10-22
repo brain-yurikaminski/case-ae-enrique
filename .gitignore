@@ -3,3 +3,8 @@ storytelling_diretoria.md
 .claude/
 linha_do_tempo.sh
 .env
+__pycache__/
+*.pyc
+.pytest_cache/
+pipeline/output/
+

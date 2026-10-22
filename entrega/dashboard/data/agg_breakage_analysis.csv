@@ -1,0 +1,4 @@
+safra,pontos_emitidos,pontos_resgatados,pontos_expirados,validade,taxa_breakage_pct,taxa_resgate_pct,meta_breakage_teto_pct,status_governanca,notas
+1. Base Migrada (Legado),324024198.0,,64090805.0,2028-03-31,19.78,,20.0,DENTRO DA META (19.78% <= 20.0%),Pontos legados recebidos na migração e expirados ao longo de 2026.
+2. Programa Novo (Aurora),437817783.0,,0.0,2027-09 a 2028-09,0.0,,20.0,EM VIGOR (Validade de 24 meses; expira a partir de Set/2027),Acúmulos gerados no cartão de crédito do Banco Aurora.
+3. Consolidado do Programa,765238192.0,323423650.0,64090805.0,2027 a 2028,8.38,42.26,20.0,"CONFUSAO DO DIRETOR: 42.4% e taxa de resgate, nao breakage!",O diretor confundiu taxa de resgate (42.45%) com taxa de expiração (breakage real = 8.38% total / 19.78% migração).
