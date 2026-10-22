@@ -1,0 +1,72 @@
+[
+  {
+    "mes":"2026-05",
+    "relatorio_transacoes":85.0,
+    "sistema_bruto_transacoes":85,
+    "sistema_aprovado_transacoes":75,
+    "relatorio_pontos":1202701.0,
+    "sistema_bruto_pontos":1202701.0,
+    "sistema_aprovado_pontos":1051095.0,
+    "relatorio_reais":19921.29,
+    "sistema_aprovado_reais":19970.83,
+    "relatorio_taxa_calculada":0.01656,
+    "sistema_taxa_aprovada_real":0.019,
+    "diagnostico_auditoria":"O operador somou pedidos cancelados\/estornados no denominador (pontos e transações), mas usou reais aprovados, subavaliando a taxa de 0.019 para ~0.016."
+  },
+  {
+    "mes":"2026-06",
+    "relatorio_transacoes":822.0,
+    "sistema_bruto_transacoes":822,
+    "sistema_aprovado_transacoes":704,
+    "relatorio_pontos":10709419.0,
+    "sistema_bruto_pontos":10709419.0,
+    "sistema_aprovado_pontos":9215135.0,
+    "relatorio_reais":174261.75,
+    "sistema_aprovado_reais":175087.9499999998,
+    "relatorio_taxa_calculada":0.01627,
+    "sistema_taxa_aprovada_real":0.019,
+    "diagnostico_auditoria":"O operador somou pedidos cancelados\/estornados no denominador (pontos e transações), mas usou reais aprovados, subavaliando a taxa de 0.019 para ~0.016."
+  },
+  {
+    "mes":"2026-07",
+    "relatorio_transacoes":759.0,
+    "sistema_bruto_transacoes":759,
+    "sistema_aprovado_transacoes":648,
+    "relatorio_pontos":10445204.0,
+    "sistema_bruto_pontos":10445204.0,
+    "sistema_aprovado_pontos":8960664.0,
+    "relatorio_reais":169868.42,
+    "sistema_aprovado_reais":170253.03,
+    "relatorio_taxa_calculada":0.01626,
+    "sistema_taxa_aprovada_real":0.019,
+    "diagnostico_auditoria":"O operador somou pedidos cancelados\/estornados no denominador (pontos e transações), mas usou reais aprovados, subavaliando a taxa de 0.019 para ~0.016."
+  },
+  {
+    "mes":"2026-08",
+    "relatorio_transacoes":783.0,
+    "sistema_bruto_transacoes":783,
+    "sistema_aprovado_transacoes":677,
+    "relatorio_pontos":10672206.0,
+    "sistema_bruto_pontos":10672206.0,
+    "sistema_aprovado_pontos":9366874.0,
+    "relatorio_reais":177263.34,
+    "sistema_aprovado_reais":177970.8699999999,
+    "relatorio_taxa_calculada":0.01661,
+    "sistema_taxa_aprovada_real":0.019,
+    "diagnostico_auditoria":"O operador somou pedidos cancelados\/estornados no denominador (pontos e transações), mas usou reais aprovados, subavaliando a taxa de 0.019 para ~0.016."
+  },
+  {
+    "mes":"2026-09",
+    "relatorio_transacoes":843.0,
+    "sistema_bruto_transacoes":843,
+    "sistema_aprovado_transacoes":704,
+    "relatorio_pontos":11516757.0,
+    "sistema_bruto_pontos":11516757.0,
+    "sistema_aprovado_pontos":9385666.0,
+    "relatorio_reais":177056.0,
+    "sistema_aprovado_reais":178328.0499999998,
+    "relatorio_taxa_calculada":0.01537,
+    "sistema_taxa_aprovada_real":0.019,
+    "diagnostico_auditoria":"O operador somou pedidos cancelados\/estornados no denominador (pontos e transações), mas usou reais aprovados, subavaliando a taxa de 0.019 para ~0.016."
+  }
+]

@@ -1,0 +1,6 @@
+crm_pix_cohort,total_usuarios,usuarios_resgataram_pix,taxa_conversao_pct,total_pontos_pix,total_reais_pix,ticket_medio_pontos_pix
+1. Clicou no Email,252,39,15.48,621925.0,11816.599999999999,15946.8
+2. Visualizou (sem clicar),2490,443,17.79,7645303.0,145261.01,17258.0
+3. Recebeu (sem visualizar),6542,1174,17.95,21122782.0,401333.65000000014,17992.1
+4. Falha no envio,316,49,15.51,924745.0,17570.17,18872.3
+5. Nao impactado pela campanha,2400,435,18.13,7664679.0,145629.3,17620.0

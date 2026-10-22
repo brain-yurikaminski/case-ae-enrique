@@ -1,0 +1,38 @@
+[
+  {
+    "safra":"1. Base Migrada (Legado)",
+    "pontos_emitidos":324024198.0,
+    "pontos_resgatados":null,
+    "pontos_expirados":64090805.0,
+    "validade":"2028-03-31",
+    "taxa_breakage_pct":19.78,
+    "taxa_resgate_pct":null,
+    "meta_breakage_teto_pct":20.0,
+    "status_governanca":"DENTRO DA META (19.78% <= 20.0%)",
+    "notas":"Pontos legados recebidos na migração e expirados ao longo de 2026."
+  },
+  {
+    "safra":"2. Programa Novo (Aurora)",
+    "pontos_emitidos":437817783.0,
+    "pontos_resgatados":null,
+    "pontos_expirados":0.0,
+    "validade":"2027-09 a 2028-09",
+    "taxa_breakage_pct":0.0,
+    "taxa_resgate_pct":null,
+    "meta_breakage_teto_pct":20.0,
+    "status_governanca":"EM VIGOR (Validade de 24 meses; expira a partir de Set\/2027)",
+    "notas":"Acúmulos gerados no cartão de crédito do Banco Aurora."
+  },
+  {
+    "safra":"3. Consolidado do Programa",
+    "pontos_emitidos":765238192.0,
+    "pontos_resgatados":323423650.0,
+    "pontos_expirados":64090805.0,
+    "validade":"2027 a 2028",
+    "taxa_breakage_pct":8.38,
+    "taxa_resgate_pct":42.26,
+    "meta_breakage_teto_pct":20.0,
+    "status_governanca":"CONFUSAO DO DIRETOR: 42.4% e taxa de resgate, nao breakage!",
+    "notas":"O diretor confundiu taxa de resgate (42.45%) com taxa de expiração (breakage real = 8.38% total \/ 19.78% migração)."
+  }
+]
